@@ -32,12 +32,12 @@ class SQL_parser:
     sql_str += from_value + ' '
 
     try:
-      if sql_dict.where['AND']:
+      if sql_dict.where.AND:
         sql_str += 'WHERE '
-        for i in range(len(sql_dict.where['AND'])):
-          if i > 0 and i < len(sql_dict.where['AND']):
+        for i in range(len(sql_dict.where.AND)):
+          if i > 0 and i < len(sql_dict.where.AND):
             sql_str += 'AND '
-          where_clause = sql_dict.where['AND'][i]
+          where_clause = sql_dict.where.AND[i]
           sql_str += str(where_clause['field']) + ' '
           operator = str(where_clause['operator'])
           operator = self.get_operator_str(operator)
@@ -66,12 +66,15 @@ class SQL_parser:
     if sql_dict.order_by:
       sql_str += 'ORDER BY '
       sql_str += sql_dict.order_by['field'] + ' '
-      if sql_dict['order_by']['order']:
+      if sql_dict.order_by['order']:
         sql_str += sql_dict.order_by['order']
+
+    if sql_dict.limit:
+      sql_str += 'LIMIT '
+      sql_str += str(sql_dict.limit)
 
     return sql_str
 
-  # SQL to Dict
   def get_where_str_list(self, str_list):
     operators = ['<=', '>=', '=', '<', '>', 'LIKE']
     clause_operator = ''
@@ -142,47 +145,47 @@ class SQL_parser:
 
         select_data_fields = self.get_clause_data(query_list, 'select')
         for field in select_data_fields:
-          sql_dict['fields'].append(field)
+          sql_dict.fields.append(field)
 
         from_data_fields = self.get_clause_data(query_list, 'from')
-        sql_dict['table'] = from_data_fields[0]
+        sql_dict.table = from_data_fields[0]
 
         if 'limit' in lower_query_str:
           limit_data_fields = self.get_clause_data(query_list, 'limit')
-          sql_dict['limit'] = limit_data_fields[0]
+          sql_dict.limit = limit_data_fields[0]
 
         if 'where' in lower_query_list and and_count > 0:
-          sql_dict['where'] = {'AND':[]}
+          sql_dict.where = {'AND':[]}
           raw_where_data = self.get_clause_data(query_list, 'where')
           where_data = self.get_where_str_list(raw_where_data)
-          sql_dict['where']['AND'].append({})
-          sql_dict['where']['AND'][0]['field'] = where_data[0]
-          sql_dict['where']['AND'][0]['value'] = where_data[2]
-          sql_dict['where']['AND'][0]['operator'] = where_data[1]
+          sql_dict.where.AND.append({})
+          sql_dict.where.AND[0]['field'] = where_data[0]
+          sql_dict.where.AND[0]['value'] = where_data[2]
+          sql_dict.where.AND[0]['operator'] = where_data[1]
 
           for i in range(and_count):
-            sql_dict['where']['AND'].append({})
+            sql_dict.where.AND.append({})
             raw_and_data = self.get_clause_data(query_list, 'and', i)
             and_data = self.get_where_str_list(raw_and_data)
             dict_index = i + 1
-            sql_dict['where']['AND'][dict_index]['field'] = and_data[0]
-            sql_dict['where']['AND'][dict_index]['value'] = and_data[2]
-            sql_dict['where']['AND'][dict_index]['operator'] = and_data[1]
+            sql_dict.where.AND[dict_index]['field'] = and_data[0]
+            sql_dict.where.AND[dict_index]['value'] = and_data[2]
+            sql_dict.where.AND[dict_index]['operator'] = and_data[1]
         elif 'where' in lower_query_str and and_count == 0:
           raw_where_data = self.get_clause_data(query_list, 'where')
           where_data = self.get_where_str_list(raw_where_data)
-          sql_dict['where']['field'] = where_data[0]
-          sql_dict['where']['value'] = where_data[2]
-          sql_dict['where']['operator'] = where_data[1]
+          sql_dict.where.field = where_data[0]
+          sql_dict.where.value = where_data[2]
+          sql_dict.where.opetor = where_data[1]
         
         if 'order by' in lower_query_str:
           order_by_data = self.get_clause_data(query_list, 'order')
           if order_by_data[0].lower() == 'by':
-            sql_dict['order_by']['field'] = order_by_data[1]
+            sql_dict.order_by['field'] = order_by_data[1]
             if len(order_by_data) <= 2:
-              sql_dict['order_by']['order'] = 'ASC'
+              sql_dict.order_by['order'] = 'ASC'
             else:
-              sql_dict['order_by']['order'] = order_by_data[2]
+              sql_dict.order_by['order'] = order_by_data[2]
 
         return sql_dict
       else:

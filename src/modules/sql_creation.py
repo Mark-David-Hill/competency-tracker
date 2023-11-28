@@ -22,7 +22,7 @@ def get_users(cursor, is_active, limit = 0, order_by = None):
   where_users = Where_dict('active', is_active, 'equals')
   users_select_dict = Select_dict(user_fields, 'Users', where_users, order_by, limit)
   sql_select = sql_parser.dict_to_sql(users_select_dict)
-  print(sql_select)
   rows = cursor.execute(sql_select,).fetchall()
   return rows
 
+# def get_competencies(cursor, limit = 0, order_by = None):

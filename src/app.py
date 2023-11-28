@@ -14,5 +14,6 @@ import sqlite3
 connection = sqlite3.connect('src/competency_tracker.db')
 cursor = connection.cursor()
 
-active_users_select_sql = get_users(cursor, True)
-print(active_users_select_sql)
+rows = get_users(cursor, True, 2)
+for row in rows:
+  print(row)
