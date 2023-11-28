@@ -3,6 +3,104 @@
 import pytest
 import sqlite3
 from src.modules import get_datetime_str
+from src.modules.password_util import *
+
+@pytest.fixture
+def cursor(tmpdir):
+  'Provides a test Database'
+  tables_to_create = [
+  """
+  CREATE TABLE IF NOT EXISTS Users (
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1,
+    date_created TEXT NOT NULL,
+    hire_date TEXT NOT NULL,
+    user_type INTEGER NOT NULL
+  )
+  """,
+  """
+  CREATE TABLE IF NOT EXISTS Competencies (
+    competency_id INTEGER NOT NULL UNIQUE,
+    name TEXT NOT NULL UNIQUE,
+    date_created TEXT NOT NULL,
+    PRIMARY KEY(competency_id AUTOINCREMENT) 
+  )
+  """,
+  """
+  CREATE TABLE IF NOT EXISTS Assessments (
+    assessment_id INTEGER NOT NULL UNIQUE,
+    competency_id INTEGER NOT NULL,
+    name TEXT NOT NULL UNIQUE,
+    date_created TEXT NOT NULL,
+    PRIMARY KEY(assessment_id AUTOINCREMENT),
+    FOREIGN KEY (competency_id) REFERENCES Competencies (competency_id)
+  )
+  """,
+  """
+  CREATE TABLE Assessment_Results (
+    result_id INTEGER NOT NULL UNIQUE,
+    user_id INTEGER NOT NULL,
+    manager_id INTEGER,
+    assessment_id INTEGER NOT NULL,
+    score INTEGER NOT NULL,
+    date_taken TEXT NOT NULL,
+    PRIMARY KEY("result_id" AUTOINCREMENT),
+    FOREIGN KEY(manager_id)
+    REFERENCES Users(user_id), 
+    FOREIGN KEY(assessment_id) REFERENCES Assessments(assessment_id),
+    FOREIGN KEY("user_id") REFERENCES "Users"("user_id") 
+  )
+  """
+  ]
+  connection = sqlite3.connect(":memory:")
+  cursor = connection.cursor()
+
+  for table in tables_to_create:
+    cursor.execute(table).fetchall()
+    connection.commit()
+  # phonebook = Phonebook(tmpdir)
+  # Alternate type of return statement that lets you run code after the test case (e.g. to clean up unneeded files)
+  yield connection
+  connection.close()
+
+def test_2_plus_2_is_4():
+  assert 2 + 2 == 4
+
+def test_get_datetime_str_returns_str():
+  datetime_str = get_datetime_str.get_date_time_str()
+  assert isinstance(datetime_str, str)
+
+def test_encrypt_returns_expected_type():
+  hash = encrypt('Hello')
+  assert isinstance(hash, bytes)
+
+def test_check_password_returns_true_when_same():
+  test_string_1 = 'Hello'
+  test_string_2 = 'Hello'
+  hash = encrypt(test_string_1)
+  result = check_password(test_string_2, hash)
+  assert result is True
+
+def test_check_password_returns_false_when_different():
+  test_string_1 = 'Hello'
+  test_string_2 = 'Goodbye'
+  hash = encrypt(test_string_1)
+  result = check_password(test_string_2, hash)
+  assert result is False
+
+def test_cursor_exists(cursor):
+  assert cursor
+
+
+
+
+
+
 
 # class Crud_db:
 #     def __init__(self, database = 'competency_tracker.db'):
@@ -36,13 +134,6 @@ from src.modules import get_datetime_str
 #   print(result)
   
 #   assert len(result) == 0
-
-def test_2_plus_2_is_4():
-  assert 2 + 2 == 4
-
-def test_get_datetime_str_returns_str():
-  datetime_str = get_datetime_str.get_date_time_str()
-  assert isinstance(datetime_str, str)
 
 # def test_table_1_is_users():
 #   query = "SELECT name FROM sqlite_master WHERE type='table';"
