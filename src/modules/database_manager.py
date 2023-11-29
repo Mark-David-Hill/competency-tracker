@@ -21,9 +21,6 @@ class And_dict:
 
 # Users SELECT sql creation. for user_type, 0 = standard user, 1 = manager
 
-# Search by first_name or last_name (I'm gonna do both together)
-
-
 # Is active? ID? Name Search?
 def get_users(cursor, is_active, id = -1, limit = 0, order_by = None, search_str = None):
   user_fields = ['user_id', 'first_name', 'last_name', 'phone', 'email', 'password', 'active', 'date_created', 'hire_date', 'user_type']
@@ -64,8 +61,8 @@ def get_assessments(cursor, id = -1, limit = 0, order_by = None):
       JOIN Competencies c ON a.competency_id = c.competency_id
       '''
     rows = cursor.execute(sql_select).fetchall()
+    return rows
     
-
 def get_assessment_results(cursor, limit = 0, order_by = None):
   pass
 
@@ -79,6 +76,16 @@ def add_competency(connection, name, date_created):
   except Exception as e:
     print(f'\n- ERROR: {e}. Competency was not added.')
 
+def add_assessment(connection, competency_id, name, date_created):
+  insert_sql = 'INSERT INTO Assessments (competency_id, name, date_created) VALUES (?, ?, ?)'
+  try:
+    cursor = connection.cursor()
+    cursor.execute(insert_sql, (competency_id, name, date_created,))
+    connection.commit()
+    print(f'\nSUCCESS: Assessment "{name}" Successfully added!')
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Assessment was not added.')
+
 def edit_competency(connection, new_name, id):
   try:
     cursor = connection.cursor()
@@ -89,3 +96,27 @@ def edit_competency(connection, new_name, id):
     print(f'SUCCESS: {new_name} updated!')
   except Exception as e:
     print(f'\n- ERROR: {e}. Competency data was not updated. -')
+
+def edit_assessment(assessment_id, connection, new_name = '', new_competency_id = -1):
+  try:
+    cursor = connection.cursor()
+    sql_update = ''
+    if new_name and new_competency_id != -1:
+      sql_update = "UPDATE Assessments SET name=?, competency_id=? WHERE assessment_id=?"
+      cursor.execute(sql_update, (new_name, new_competency_id, assessment_id,))
+      connection.commit()
+    elif new_name and new_competency_id == -1:
+      sql_update = "UPDATE Assessments SET name=? WHERE assessment_id=?"
+      cursor.execute(sql_update, (new_name, assessment_id,))
+      connection.commit()
+    elif new_competency_id != -1 and not new_name:
+      sql_update = "UPDATE Assessments SET competency_id=? WHERE assessment_id=?"
+      cursor.execute(sql_update, (new_competency_id, assessment_id,))
+      connection.commit()
+    print(f'SUCCESS: Assessment ID# {assessment_id} updated!')
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Assessment data was not updated. -')
+
+
+def delete_assessment_result(connection, id):
+  pass
