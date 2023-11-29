@@ -57,4 +57,14 @@ for table in tables_to_create:
   cursor.execute(table).fetchall()
   connection.commit()
 
+competency_records_to_add = [
+                              ['Computer Anatomy', '2023/11/27 15:41:31'],
+                              ['Data Types', '2023/11/27 15:42:50']
+                            ]
+
+insert_sql = "INSERT INTO Competencies (name, date_created) VALUES (?, ?)"
+for record in competency_records_to_add:
+  cursor.execute(insert_sql, record)
+  connection.commit()
+
 print(cursor)

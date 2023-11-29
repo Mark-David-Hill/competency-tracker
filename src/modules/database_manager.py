@@ -1,0 +1,91 @@
+from modules.sql_parser import SQL_parser
+sql_parser = SQL_parser()
+
+class Select_dict:
+  def __init__(self, fields, table, where, order_by, limit):
+    self.fields = fields
+    self.table = table
+    self.where = where
+    self.order_by = order_by
+    self.limit = limit
+
+class Where_dict:
+  def __init__(self, field, value, operator):
+    self.field = field
+    self.value = value
+    self.operator = operator
+
+class And_dict:
+  def __init__(self, where_list):
+    self.where_lists = where_list
+
+# Users SELECT sql creation. for user_type, 0 = standard user, 1 = manager
+
+# Search by first_name or last_name (I'm gonna do both together)
+
+
+# Is active? ID? Name Search?
+def get_users(cursor, is_active, id = -1, limit = 0, order_by = None, search_str = None):
+  user_fields = ['user_id', 'first_name', 'last_name', 'phone', 'email', 'password', 'active', 'date_created', 'hire_date', 'user_type']
+  if id != -1:
+    where_users = Where_dict('active', is_active, 'equals')
+  else:
+    where_users = Where_dict('active', is_active, 'equals')
+  users_select_dict = Select_dict(user_fields, 'Users', where_users, order_by, limit)
+  sql_select = sql_parser.dict_to_sql(users_select_dict)
+  rows = cursor.execute(sql_select,).fetchall()
+  return rows
+
+def get_competencies(cursor, id = -1, limit = 0, order_by = None):
+  competency_fields = ['name', 'date_created']
+  if id != -1:
+    where_competencies = Where_dict('competency_id', id, 'equals')
+  else:
+    where_competencies = None
+  competencies_select_dict = Select_dict(competency_fields, 'Competencies', where_competencies, order_by, limit)
+  sql_select = sql_parser.dict_to_sql(competencies_select_dict)
+  rows = cursor.execute(sql_select,).fetchall()
+  return rows
+
+def get_assessments(cursor, id = -1, limit = 0, order_by = None):
+  if id != -1:
+    sql_select = '''
+      SELECT a.competency_id, a.name, a.date_created, c.name
+      FROM Assessments a
+      JOIN Competencies c ON a.competency_id = c.competency_id
+      WHERE a.assessment_id == ?
+      '''
+    rows = cursor.execute(sql_select,(id,)).fetchall()
+    return rows
+  else:
+    sql_select = '''
+      SELECT a.competency_id, a.name, a.date_created, c.name
+      FROM Assessments a
+      JOIN Competencies c ON a.competency_id = c.competency_id
+      '''
+    rows = cursor.execute(sql_select).fetchall()
+    
+
+def get_assessment_results(cursor, limit = 0, order_by = None):
+  pass
+
+def add_competency(connection, name, date_created):
+  insert_sql = 'INSERT INTO COMPETENCIES (name, date_created) VALUES (?, ?)'
+  try:
+    cursor = connection.cursor()
+    cursor.execute(insert_sql, (name, date_created,))
+    connection.commit()
+    print(f'\nSUCCESS: Competency "{name}" Successfully added!')
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Competency was not added.')
+
+def edit_competency(connection, new_name, id):
+  try:
+    cursor = connection.cursor()
+    sql_update = "UPDATE Competencies SET name=? WHERE competency_id=?"
+    update_values = (new_name, id,)
+    cursor.execute(sql_update, update_values)
+    connection.commit()
+    print(f'SUCCESS: {new_name} updated!')
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Competency data was not updated. -')
