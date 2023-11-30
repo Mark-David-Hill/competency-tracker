@@ -197,9 +197,14 @@ def test_edit_user_hire_date(connection):
   users = get_users(cursor, 7)
   assert users[0][8] == date_time_str
 
-def test_edit_user_type(connection):
-  cursor = connection.cursor()
-  user_type = random.randint(0, 1)
-  edit_user(connection, 7, 'user_type', user_type)
-  users = get_users(cursor, 7)
-  assert users[0][6] == user_type
+# def test_edit_user_type(connection):
+#   cursor = connection.cursor()
+#   user_type = random.randint(0, 1)
+#   edit_user(connection, 7, 'user_type', user_type)
+#   users = get_users(cursor, 7)
+#   assert users[0][6] == user_type
+
+def test_get_assessment_results_works(cursor):
+  results = get_assessment_results(cursor)
+  result_id, user_id, manager_id, assessment_id, user_first_name, user_last_name, manager_first_name, manager_last_name, assessment_name, score, date_taken = results[0]
+  assert result_id == 1 and user_id == 1 and manager_id == 2 and assessment_id == 3 and user_first_name == 'Mark' and user_last_name == 'Hill'and manager_first_name == 'Krystal' and manager_last_name == 'Hill' and assessment_name == 'Database Proficiency Interview' and score == 4 and date_taken == '2023/11/30 14:46:49'

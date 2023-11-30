@@ -74,10 +74,33 @@ def get_assessments(cursor, id = -1, limit = 0, order_by = None):
       rows = cursor.execute(sql_select).fetchall()
       return rows
   except Exception as e:
-    print(f'\n- ERROR: {e}. Could not get Assessment data.')  
-    
-def get_assessment_results(cursor, limit = 0, order_by = None):
-  pass
+    print(f'\n- ERROR: {e}. Could not get Assessment data.')
+
+def get_assessment_results(cursor, id = -1, limit = 0, order_by = None):
+  try:
+    if id != -1:
+      sql_select = '''
+        SELECT ar.result_id, ar.user_id, ar.manager_id, ar.assessment_id, u.first_name, u.last_name, m.first_name, m.last_name, a.name, ar.score, ar.date_taken 
+        FROM Assessment_results ar
+        JOIN Users u ON ar.user_id = u.user_id
+        JOIN Users m ON ar.manager_id = m.user_id
+        JOIN Assessments a ON ar.assessment_id = a.assessment_id
+        WHERE ar.result_id == ?
+        '''
+      rows = cursor.execute(sql_select,(id,)).fetchall()
+      return rows
+    else:
+      sql_select = '''
+        SELECT ar.result_id, ar.user_id, ar.manager_id, ar.assessment_id, u.first_name, u.last_name, m.first_name, m.last_name, a.name, ar.score, ar.date_taken 
+        FROM Assessment_results ar
+        JOIN Users u ON ar.user_id = u.user_id
+        JOIN Users m ON ar.manager_id = m.user_id
+        JOIN Assessments a ON ar.assessment_id = a.assessment_id
+        '''
+      rows = cursor.execute(sql_select).fetchall()
+      return rows
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Assessment Result data.')
 
 def add_competency(connection, name, date_created):
   insert_sql = 'INSERT INTO COMPETENCIES (name, date_created) VALUES (?, ?)'
