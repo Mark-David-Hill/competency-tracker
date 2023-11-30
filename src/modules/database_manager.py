@@ -132,6 +132,16 @@ def add_user(connection, first_name, last_name, phone, email, password, active, 
   except Exception as e:
     print(f'\n- ERROR: {e}. User was not added.')
 
+def add_assessment_result(connection, user_id, manager_id, assessment_id, score, date_taken):
+  insert_sql = 'INSERT INTO Assessment_Results (user_id, manager_id, assessment_id, score, date_taken) VALUES (?, ?, ?, ?, ?)'
+  try:
+    cursor = connection.cursor()
+    cursor.execute(insert_sql, (user_id, manager_id, assessment_id, score, date_taken))
+    connection.commit()
+    print(f'\nSUCCESS: Assessment Results Successfully added!')
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Assessment Results were not added.')
+
 def edit_competency(connection, new_name, id):
   try:
     cursor = connection.cursor()
@@ -191,6 +201,8 @@ def edit_user(connection, id, field_to_update, new_value):
     print(f'SUCCESS: User with ID#{id} updated!')
   except Exception as e:
     print(f'\n- ERROR: {e}. Competency data was not updated. -')
+
+
 
 
 def delete_assessment_result(connection, id):
