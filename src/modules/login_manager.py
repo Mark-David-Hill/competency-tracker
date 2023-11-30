@@ -8,8 +8,9 @@ def encrypt_password(password_str):
 
 def check_password(password_str, hashed_password):
     # try:
+    hash = bytes(hashed_password, 'utf-8')
     user_bytes = password_str.encode('utf-8')
-    result = bcrypt.checkpw(user_bytes, hashed_password)
+    result = bcrypt.checkpw(user_bytes, hash)
     return result
     # except Exception as e:
     #   print(f'ERROR: {e} Password Check could not be performed.')
