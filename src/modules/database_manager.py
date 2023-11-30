@@ -87,7 +87,7 @@ def get_assessment_results(cursor, id = -1, limit = 0, order_by = None):
         JOIN Assessments a ON ar.assessment_id = a.assessment_id
         WHERE ar.result_id == ?
         '''
-      rows = cursor.execute(sql_select,(id,)).fetchall()
+      rows = cursor.execute(sql_select,(id,)).fetchone()
       return rows
     else:
       sql_select = '''
