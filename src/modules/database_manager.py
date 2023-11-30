@@ -17,52 +17,64 @@ class Where_dict:
 
 # Users SELECT sql creation. for user_type, 0 = standard user, 1 = manager
 def get_users(cursor, id = -1, limit = 0, order_by = None):
-  user_fields = ['user_id', 'first_name', 'last_name', 'phone', 'email', 'password', 'active', 'date_created', 'hire_date', 'user_type']
-  if id != -1:
-    where_users = Where_dict('user_id', id, 'equals')
-  else:
-    where_users = None
-  users_select_dict = Select_dict(user_fields, 'Users', where_users, order_by, limit)
-  sql_select = sql_parser.dict_to_sql(users_select_dict)
-  rows = cursor.execute(sql_select,).fetchall()
-  return rows
+  try:
+    user_fields = ['user_id', 'first_name', 'last_name', 'phone', 'email', 'password', 'active', 'date_created', 'hire_date', 'user_type']
+    if id != -1:
+      where_users = Where_dict('user_id', id, 'equals')
+    else:
+      where_users = None
+    users_select_dict = Select_dict(user_fields, 'Users', where_users, order_by, limit)
+    sql_select = sql_parser.dict_to_sql(users_select_dict)
+    rows = cursor.execute(sql_select,).fetchall()
+    return rows
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Users data.')
 
 def get_users_with_search(cursor, search_str):
-  like_value = '%' + search_str + '%'
-  sql_select = '''SELECT user_id, first_name, last_name, phone, email, password, active, date_created, hire_date, user_type
-                FROM Users WHERE first_name LIKE ? or last_name LIKE ?'''
-  rows = cursor.execute(sql_select, (like_value, like_value,)).fetchall()
-  return rows
+  try:
+    like_value = '%' + search_str + '%'
+    sql_select = '''SELECT user_id, first_name, last_name, phone, email, password, active, date_created, hire_date, user_type
+                  FROM Users WHERE first_name LIKE ? or last_name LIKE ?'''
+    rows = cursor.execute(sql_select, (like_value, like_value,)).fetchall()
+    return rows
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Users data.')
 
 def get_competencies(cursor, id = -1, limit = 0, order_by = None):
-  competency_fields = ['name', 'date_created']
-  if id != -1:
-    where_competencies = Where_dict('competency_id', id, 'equals')
-  else:
-    where_competencies = None
-  competencies_select_dict = Select_dict(competency_fields, 'Competencies', where_competencies, order_by, limit)
-  sql_select = sql_parser.dict_to_sql(competencies_select_dict)
-  rows = cursor.execute(sql_select,).fetchall()
-  return rows
+  try:
+    competency_fields = ['name', 'date_created']
+    if id != -1:
+      where_competencies = Where_dict('competency_id', id, 'equals')
+    else:
+      where_competencies = None
+    competencies_select_dict = Select_dict(competency_fields, 'Competencies', where_competencies, order_by, limit)
+    sql_select = sql_parser.dict_to_sql(competencies_select_dict)
+    rows = cursor.execute(sql_select,).fetchall()
+    return rows
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Competencies data.')
 
 def get_assessments(cursor, id = -1, limit = 0, order_by = None):
-  if id != -1:
-    sql_select = '''
-      SELECT a.competency_id, a.name, a.date_created, c.name
-      FROM Assessments a
-      JOIN Competencies c ON a.competency_id = c.competency_id
-      WHERE a.assessment_id == ?
-      '''
-    rows = cursor.execute(sql_select,(id,)).fetchall()
-    return rows
-  else:
-    sql_select = '''
-      SELECT a.competency_id, a.name, a.date_created, c.name
-      FROM Assessments a
-      JOIN Competencies c ON a.competency_id = c.competency_id
-      '''
-    rows = cursor.execute(sql_select).fetchall()
-    return rows
+  try:
+    if id != -1:
+      sql_select = '''
+        SELECT a.competency_id, a.name, a.date_created, c.name
+        FROM Assessments a
+        JOIN Competencies c ON a.competency_id = c.competency_id
+        WHERE a.assessment_id == ?
+        '''
+      rows = cursor.execute(sql_select,(id,)).fetchall()
+      return rows
+    else:
+      sql_select = '''
+        SELECT a.competency_id, a.name, a.date_created, c.name
+        FROM Assessments a
+        JOIN Competencies c ON a.competency_id = c.competency_id
+        '''
+      rows = cursor.execute(sql_select).fetchall()
+      return rows
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Assessment data.')  
     
 def get_assessment_results(cursor, limit = 0, order_by = None):
   pass
@@ -87,14 +99,13 @@ def add_assessment(connection, competency_id, name, date_created):
   except Exception as e:
     print(f'\n- ERROR: {e}. Assessment was not added.')
 
-def add_user(connection, field_values):
-  first_name, last_name, phone, email, password, active, date_created, hire_date, user_type = field_values
+def add_user(connection, first_name, last_name, phone, email, password, active, date_created, hire_date, user_type):
   insert_sql = 'INSERT INTO Users (first_name, last_name, phone, email, password, active, date_created, hire_date, user_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
   try:
     cursor = connection.cursor()
     cursor.execute(insert_sql, (first_name, last_name, phone, email, password, active, date_created, hire_date, user_type))
     connection.commit()
-    print(f'\nSUCCESS: User "{field_values[0]} {field_values[1]}" Successfully added!')
+    print(f'\nSUCCESS: User "{first_name} {last_name}" Successfully added!')
   except Exception as e:
     print(f'\n- ERROR: {e}. User was not added.')
 
@@ -128,6 +139,35 @@ def edit_assessment(assessment_id, connection, new_name = '', new_competency_id 
     print(f'SUCCESS: Assessment ID# {assessment_id} updated!')
   except Exception as e:
     print(f'\n- ERROR: {e}. Assessment data was not updated. -')
+
+def edit_user(connection, id, field_to_update, new_value):
+  try:
+    cursor = connection.cursor()
+    sql_update = ''
+    if field_to_update == 'first_name':
+      sql_update = f'UPDATE Users SET first_name=? WHERE user_id=?'
+    elif field_to_update == 'last_name':
+      sql_update = f'UPDATE Users SET last_name=? WHERE user_id=?'
+    elif field_to_update == 'phone':
+      sql_update = f'UPDATE Users SET phone=? WHERE user_id=?'
+    elif field_to_update == 'email':
+      sql_update = f'UPDATE Users SET email=? WHERE user_id=?'
+    elif field_to_update == 'password':
+      sql_update = f'UPDATE Users SET password=? WHERE user_id=?'
+    elif field_to_update == 'active':
+      sql_update = f'UPDATE Users SET active=? WHERE user_id=?'
+    elif field_to_update == 'date_created':
+      sql_update = f'UPDATE Users SET date_created=? WHERE user_id=?'
+    elif field_to_update == 'hire_date':
+      sql_update = f'UPDATE Users SET hire_date=? WHERE user_id=?'
+    elif field_to_update == 'user_type':
+      sql_update = f'UPDATE Users SET user_type=? WHERE user_id=?'
+    update_values = (new_value, id,)
+    cursor.execute(sql_update, update_values)
+    connection.commit()
+    print(f'SUCCESS: User with ID#{id} updated!')
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Competency data was not updated. -')
 
 
 def delete_assessment_result(connection, id):

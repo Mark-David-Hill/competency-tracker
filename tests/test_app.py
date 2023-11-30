@@ -1,5 +1,4 @@
 # To test: PYTHONPATH=src python3 -m pytest
-# https://www.youtube.com/watch?v=c9oeoN1AnUM
 import pytest
 import sqlite3
 from src.modules.get_datetime_str import *
@@ -133,7 +132,6 @@ def test_user_search_works_first_name(cursor):
   assert users[0][1] == 'Inactiboy' and users[1][1] == 'Inactigirl'
 
 def test_add_user_works(connection):
-  field_values = []
   first_name = str(random.randint(0, 100000))
   last_name = str(random.randint(0, 100000))
   phone = str(random.randint(0, 100000))
@@ -142,17 +140,66 @@ def test_add_user_works(connection):
   active = 1
   date_time_str = get_date_time_str()
   user_type = 1
-  field_values.append(first_name)
-  field_values.append(last_name)
-  field_values.append(phone)
-  field_values.append(email)
-  field_values.append(password)
-  field_values.append(active)
-  field_values.append(date_time_str)
-  field_values.append(date_time_str)
-  field_values.append(user_type)
   cursor = connection.cursor()
-  add_user(connection, field_values)
+  add_user(connection, first_name, last_name, phone, email, password, active, date_time_str, date_time_str, user_type)
   all_users = get_users(cursor)
   test_user = get_users(cursor, len(all_users))
   assert test_user[0][1] == first_name and test_user[0][2] == last_name and test_user[0][3] == phone and test_user[0][4] == email and test_user[0][5] == password and test_user[0][6] == active and test_user[0][7] == date_time_str and test_user[0][8] == date_time_str and test_user[0][9] == user_type
+
+def test_edit_user_first_name(connection):
+  cursor = connection.cursor()
+  edit_user(connection, 7, 'first_name', 'Test First Name')
+  users = get_users(cursor, 7)
+  assert users[0][1] == 'Test First Name'
+
+def test_edit_user_last_name(connection):
+  cursor = connection.cursor()
+  edit_user(connection, 7, 'last_name', 'Test Last Name')
+  users = get_users(cursor, 7)
+  assert users[0][2] == 'Test Last Name'
+
+def test_edit_user_phone(connection):
+  cursor = connection.cursor()
+  edit_user(connection, 7, 'phone', 'Test Phone')
+  users = get_users(cursor, 7)
+  assert users[0][3] == 'Test Phone'
+
+def test_edit_user_email(connection):
+  cursor = connection.cursor()
+  edit_user(connection, 7, 'email', 'Test Email')
+  users = get_users(cursor, 7)
+  assert users[0][4] == 'Test Email'
+
+def test_edit_user_password(connection):
+  cursor = connection.cursor()
+  edit_user(connection, 7, 'password', 'Test Password')
+  users = get_users(cursor, 7)
+  assert users[0][5] == 'Test Password'
+
+def test_edit_user_active(connection):
+  cursor = connection.cursor()
+  is_active = random.randint(0, 1)
+  edit_user(connection, 7, 'active', is_active)
+  users = get_users(cursor, 7)
+  assert users[0][6] == is_active
+
+def test_edit_user_date_created(connection):
+  cursor = connection.cursor()
+  date_time_str = get_date_time_str()
+  edit_user(connection, 7, 'date_created', date_time_str)
+  users = get_users(cursor, 7)
+  assert users[0][7] == date_time_str
+
+def test_edit_user_hire_date(connection):
+  cursor = connection.cursor()
+  date_time_str = get_date_time_str()
+  edit_user(connection, 7, 'hire_date', date_time_str)
+  users = get_users(cursor, 7)
+  assert users[0][8] == date_time_str
+
+def test_edit_user_type(connection):
+  cursor = connection.cursor()
+  user_type = random.randint(0, 1)
+  edit_user(connection, 7, 'user_type', user_type)
+  users = get_users(cursor, 7)
+  assert users[0][6] == user_type

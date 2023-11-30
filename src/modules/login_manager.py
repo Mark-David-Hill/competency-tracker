@@ -14,3 +14,7 @@ def check_password(password_str, hashed_password):
     return result
     # except Exception as e:
     #   print(f'ERROR: {e} Password Check could not be performed.')
+
+class User:
+   def __init__(self) -> None:
+      pass
