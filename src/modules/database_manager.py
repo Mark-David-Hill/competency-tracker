@@ -219,9 +219,16 @@ def edit_assessment_results(connection, id, field_to_update, new_value):
     update_values = (new_value, id,)
     cursor.execute(sql_update, update_values)
     connection.commit()
-    print(f'SUCCESS: Test Results updated!')
+    print(f'SUCCESS: Assessment Results updated!')
   except Exception as e:
-    print(f'\n- ERROR: {e}. Test Results were not updated. -')
+    print(f'\n- ERROR: {e}. Assessment Results were not updated. -')
 
 def delete_assessment_result(connection, id):
-  pass
+  try:
+    sql_delete = "DELETE FROM Assessment_Results WHERE result_id=?"
+    cursor = connection.cursor()
+    cursor.execute(sql_delete, (id,)).fetchone()
+    connection.commit()
+    print(f'SUCCESS: Assessment Results with ID# {id} successfully Deleted!')
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Assessment Results were not deleted -')
