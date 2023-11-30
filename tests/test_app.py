@@ -225,3 +225,39 @@ def test_add_assessment_results_works(connection):
   all_results = get_assessment_results(cursor)
   test_results = get_assessment_results(cursor, len(all_results))
   assert test_results[1] == user_id and test_results[2] == manager_id and test_results[3] == assessment_id and test_results[9] == score and test_results[10] == date_time_str
+
+
+def test_edit_results_user_id(connection):
+  cursor = connection.cursor()
+  user_id = random.randint(1, 7)
+  edit_assessment_results(connection, 4, 'user_id', user_id)
+  results = get_assessment_results(cursor, 4)
+  assert results[1] == user_id
+
+def test_edit_results_manager_id(connection):
+  cursor = connection.cursor()
+  manager_id = random.randint(1, 7)
+  edit_assessment_results(connection, 4, 'manager_id', manager_id)
+  results = get_assessment_results(cursor, 4)
+  assert results[2] == manager_id
+
+def test_edit_results_assessment_id(connection):
+  cursor = connection.cursor()
+  assessment_id = random.randint(1, 7)
+  edit_assessment_results(connection, 4, 'assessment_id', assessment_id)
+  results = get_assessment_results(cursor, 4)
+  assert results[3] == assessment_id
+
+def test_edit_results_score(connection):
+  cursor = connection.cursor()
+  score = random.randint(1, 5)
+  edit_assessment_results(connection, 4, 'score', score)
+  results = get_assessment_results(cursor, 4)
+  assert results[9] == score
+
+def test_edit_results_date_taken(connection):
+  cursor = connection.cursor()
+  date_time_str = get_date_time_str()
+  edit_assessment_results(connection, 4, 'date_taken', date_time_str)
+  results = get_assessment_results(cursor, 4)
+  assert results[10] == date_time_str

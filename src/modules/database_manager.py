@@ -202,8 +202,26 @@ def edit_user(connection, id, field_to_update, new_value):
   except Exception as e:
     print(f'\n- ERROR: {e}. Competency data was not updated. -')
 
-
-
+def edit_assessment_results(connection, id, field_to_update, new_value):
+  try:
+    cursor = connection.cursor()
+    sql_update = ''
+    if field_to_update == 'user_id':
+      sql_update = f'UPDATE Assessment_Results SET user_id=? WHERE result_id=?'
+    elif field_to_update == 'manager_id':
+      sql_update = f'UPDATE Assessment_Results SET manager_id=? WHERE result_id=?'
+    elif field_to_update == 'assessment_id':
+      sql_update = f'UPDATE Assessment_Results SET assessment_id=? WHERE result_id=?'
+    elif field_to_update == 'score':
+      sql_update = f'UPDATE Assessment_Results SET score=? WHERE result_id=?'
+    elif field_to_update == 'date_taken':
+      sql_update = f'UPDATE Assessment_Results SET date_taken=? WHERE result_id=?'
+    update_values = (new_value, id,)
+    cursor.execute(sql_update, update_values)
+    connection.commit()
+    print(f'SUCCESS: Test Results updated!')
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Test Results were not updated. -')
 
 def delete_assessment_result(connection, id):
   pass
