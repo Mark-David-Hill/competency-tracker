@@ -17,7 +17,6 @@ def connection(tmpdir):
 @pytest.fixture
 def cursor(tmpdir):
   'Provides a cursor for the test Database'
-  # connection = sqlite3.connect(":memory:")
   connection = sqlite3.connect("tests/competency_tracker.db")
   cursor = connection.cursor()
   yield connection
@@ -31,20 +30,6 @@ def test_encrypt_returns_expected_type():
   hash = encrypt_password('Hello')
   assert isinstance(hash, bytes)
 
-# def test_check_password_returns_true_when_same():
-#   test_string_1 = 'Hello'
-#   test_string_2 = 'Hello'
-#   hash_str = encrypt_password(test_string_1)
-#   result = check_password(test_string_2, hash)
-#   assert result is True
-
-# def test_check_password_returns_false_when_different():
-#   test_string_1 = 'Hello'
-#   test_string_2 = 'Goodbye'
-#   hash = encrypt_password(test_string_1)
-#   result = check_password(test_string_2, hash)
-#   assert result is False
-
 def test_cursor_exists(cursor):
   assert cursor
 
@@ -57,31 +42,31 @@ def test_there_are_at_least_16_competencies_in_db(cursor):
   assert len(competencies) >= 16
 
 def test_user_1_is_mark(cursor):
-  user = get_users(cursor, 1, 1)
+  user = get_users(cursor, 1)
   id, first_name, last_name, phone, email, password, active, date_created, hire_date, user_type = user[0]
   assert id == 1 and first_name == 'Mark' and last_name == 'Hill' and phone == '801-292-7777' and email == 'mark@gmail.com' and password == '$2b$12$JmRFOv1XnLK72syCscNqau9o0P2Xkb5LU4mPVWJ16LFr.gtyditki' and active == 1 and date_created == '2023/11/28 15:05:57' and hire_date == '2023/11/28 15:07:34' and user_type == 1
 
 def test_check_password_works_for_mark(cursor):
-  user = get_users(cursor, 1, 1)
+  user = get_users(cursor, 1)
   original_password = 'mark_pass'
   hash = user[0][5]
   result = check_password(original_password, hash)
   assert result is True
 
 def test_returns_false_with_incorrect_mark_password(cursor):
-  user = get_users(cursor, 1, 1)
+  user = get_users(cursor, 1)
   original_password = 'mark_wrong_password'
   hash = user[0][5]
   result = check_password(original_password, hash)
   assert result is False
 
-def test_there_are_at_least_4_active_users(cursor):
-  users = get_users(cursor, True)
-  assert len(users) >= 4
+# def test_there_are_at_least_4_active_users(cursor):
+#   users = get_users(cursor)
+#   assert len(users) >= 4
 
-def test_there_are_at_least_2_active_users(cursor):
-  users = get_users(cursor, 0)
-  assert len(users) >= 2
+# def test_there_are_at_least_2_active_users(cursor):
+#   users = get_users(cursor)
+#   assert len(users) >= 2
 
 def test_successfully_add_competency(connection):
   rand_str = str(random.randint(0, 100000))
@@ -138,3 +123,11 @@ def test_successfully_add_assessment(connection):
   all_assessments = get_assessments(cursor)
   test_assessment = get_assessments(cursor, len(all_assessments))
   assert test_assessment[0][0] == rand_int and test_assessment[0][1] == rand_str
+
+def test_user_search_works_last_name(cursor):
+  users = get_users_with_search(cursor, 'Hill')
+  assert users[0][1] == 'Mark' and users[1][1] == 'Krystal' and users[2][1] == 'Daxter' and users[3][1] == 'Rune'
+
+def test_user_search_works_first_name(cursor):
+  users = get_users_with_search(cursor, 'nacti')
+  assert users[0][1] == 'Inactiboy' and users[1][1] == 'Inactigirl'

@@ -11,12 +11,16 @@ from modules.get_datetime_str import get_date_time_str
 from modules.login_manager import *
 from modules.database_manager import get_users
 import sqlite3
-# connection = sqlite3.connect('src/competency_tracker.db')
-# cursor = connection.cursor()
+connection = sqlite3.connect('src/competency_tracker.db')
+cursor = connection.cursor()
+
+user = get_users(cursor, 1, 1)
+for field in user[0]:
+  print(field)
 
 # rows = get_users(cursor, True, 2)
 # for row in rows:
 #   print(row)
 
-date_time = get_date_time_str()
-print(date_time)
+# date_time = get_date_time_str()
+# print(date_time)

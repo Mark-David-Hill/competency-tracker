@@ -15,22 +15,23 @@ class Where_dict:
     self.value = value
     self.operator = operator
 
-class And_dict:
-  def __init__(self, where_list):
-    self.where_lists = where_list
-
 # Users SELECT sql creation. for user_type, 0 = standard user, 1 = manager
-
-# Is active? ID? Name Search?
-def get_users(cursor, is_active, id = -1, limit = 0, order_by = None, search_str = None):
+def get_users(cursor, id = -1, limit = 0, order_by = None):
   user_fields = ['user_id', 'first_name', 'last_name', 'phone', 'email', 'password', 'active', 'date_created', 'hire_date', 'user_type']
   if id != -1:
-    where_users = Where_dict('active', is_active, 'equals')
+    where_users = Where_dict('user_id', id, 'equals')
   else:
-    where_users = Where_dict('active', is_active, 'equals')
+    where_users = None
   users_select_dict = Select_dict(user_fields, 'Users', where_users, order_by, limit)
   sql_select = sql_parser.dict_to_sql(users_select_dict)
   rows = cursor.execute(sql_select,).fetchall()
+  return rows
+
+def get_users_with_search(cursor, search_str):
+  like_value = '%' + search_str + '%'
+  sql_select = '''SELECT user_id, first_name, last_name, phone, email, password, active, date_created, hire_date, user_type
+                FROM Users WHERE first_name LIKE ? or last_name LIKE ?'''
+  rows = cursor.execute(sql_select, (like_value, like_value,)).fetchall()
   return rows
 
 def get_competencies(cursor, id = -1, limit = 0, order_by = None):
