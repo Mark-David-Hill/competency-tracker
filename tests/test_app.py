@@ -131,3 +131,28 @@ def test_user_search_works_last_name(cursor):
 def test_user_search_works_first_name(cursor):
   users = get_users_with_search(cursor, 'nacti')
   assert users[0][1] == 'Inactiboy' and users[1][1] == 'Inactigirl'
+
+def test_add_user_works(connection):
+  field_values = []
+  first_name = str(random.randint(0, 100000))
+  last_name = str(random.randint(0, 100000))
+  phone = str(random.randint(0, 100000))
+  email = str(random.randint(0, 100000))
+  password = encrypt_password(str(random.randint(0,100000)))
+  active = 1
+  date_time_str = get_date_time_str()
+  user_type = 1
+  field_values.append(first_name)
+  field_values.append(last_name)
+  field_values.append(phone)
+  field_values.append(email)
+  field_values.append(password)
+  field_values.append(active)
+  field_values.append(date_time_str)
+  field_values.append(date_time_str)
+  field_values.append(user_type)
+  cursor = connection.cursor()
+  add_user(connection, field_values)
+  all_users = get_users(cursor)
+  test_user = get_users(cursor, len(all_users))
+  assert test_user[0][1] == first_name and test_user[0][2] == last_name and test_user[0][3] == phone and test_user[0][4] == email and test_user[0][5] == password and test_user[0][6] == active and test_user[0][7] == date_time_str and test_user[0][8] == date_time_str and test_user[0][9] == user_type
