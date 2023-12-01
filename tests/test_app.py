@@ -249,28 +249,11 @@ def test_edit_results_date_taken(connection):
   results = get_assessment_results(cursor, 4)
   assert results[10] == date_time_str
 
-# def test_delete_results(connection):
-#   cursor = connection.cursor()
-#   original_results = get_assessment_results(cursor)
-#   last_results_id = original_results[-1][0]
-#   new_results_id = last_results_id + 1
-#   user_id = random.randint(1, 7)
-#   manager_id = random.randint(1, 7)
-#   assessment_id = random.randint(1, 7)
-#   score = random.randint(1, 5)
-#   date_time_str = get_date_time_str()
-#   add_assessment_result(connection, user_id, manager_id, assessment_id, score, date_time_str)
-#   all_results = get_assessment_results(cursor)
-#   results_length = len(all_results)
-#   delete_assessment_result(connection, new_results_id)
-#   new_results = get_assessment_results(cursor)
-#   assert len(new_results) == (results_length - 1)
-
-def test_add_assessment_results_works(connection):
+def test_delete_results(connection):
   cursor = connection.cursor()
-  original_results = get_assessment_results(cursor)
-  last_results_id = original_results[-1][0]
-  new_results_id = last_results_id + 1
+  # original_results = get_assessment_results(cursor)
+  # last_results_id = original_results[-1][0]
+  # new_results_id = last_results_id + 1
   user_id = random.randint(1, 7)
   manager_id = random.randint(1, 7)
   assessment_id = random.randint(1, 7)
@@ -278,5 +261,24 @@ def test_add_assessment_results_works(connection):
   date_time_str = get_date_time_str()
   add_assessment_result(connection, user_id, manager_id, assessment_id, score, date_time_str)
   all_results = get_assessment_results(cursor)
-  test_results = get_assessment_results(cursor, new_results_id)
+  latest_result = all_results[-1]
+  new_results_id = latest_result[0]
+  # results_length = len(all_results)
+  was_deleted = delete_assessment_result(connection, new_results_id)
+  new_results = get_assessment_results(cursor)
+  new_last_result = new_results[-1]
+  new_last_result_id = new_last_result[0]
+  assert was_deleted is True and new_results_id != new_last_result_id
+
+def test_add_assessment_results_works(connection):
+  cursor = connection.cursor()
+  original_results = get_assessment_results(cursor)
+  user_id = random.randint(1, 7)
+  manager_id = random.randint(1, 7)
+  assessment_id = random.randint(1, 7)
+  score = random.randint(1, 5)
+  date_time_str = get_date_time_str()
+  add_assessment_result(connection, user_id, manager_id, assessment_id, score, date_time_str)
+  all_results = get_assessment_results(cursor)
+  test_results = all_results[-1]
   assert test_results[1] == user_id and test_results[2] == manager_id and test_results[3] == assessment_id and test_results[9] == score and test_results[10] == date_time_str

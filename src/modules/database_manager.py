@@ -230,5 +230,6 @@ def delete_assessment_result(connection, id):
     cursor.execute(sql_delete, (id,)).fetchone()
     connection.commit()
     print(f'SUCCESS: Assessment Results with ID# {id} successfully Deleted!')
+    return True
   except Exception as e:
     print(f'\n- ERROR: {e}. Assessment Results were not deleted -')

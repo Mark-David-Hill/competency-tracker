@@ -31,5 +31,6 @@ cursor = connection.cursor()
 
 results = get_assessment_results(cursor, 3)
 print(results)
-# result_id, user_id, manager_id, assessment_id, user_first_name, user_last_name, manager_first_name, manager_last_name, assessment_name, score, date_taken = results[0]
-# print(result_id)
+result_id, user_id, manager_id, assessment_id, user_first_name, user_last_name, manager_first_name, manager_last_name, assessment_name, score, date_taken = results[0]
+print(result_id)
+
