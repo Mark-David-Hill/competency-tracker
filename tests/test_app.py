@@ -278,4 +278,15 @@ def test_add_assessment_results_works(connection):
 def test_get_user_with_specifi_email_works(cursor):
   user = get_user_with_specific_email(cursor, 'rune@gmail.com')
   assert user[0] == 4 and user[1] == 'Rune' and user[2] == 'Hill' and user[3] == '801-222-2222' and user[4] == 'rune@gmail.com' and user[5] == '$2b$12$4COf00M26MAPHZVlElLIFuM3Das9A6pz1ZpH4yMW0KKG.3yjhCLyW' and user[6] == 1 and user[7] == '2023/11/28 15:15:02' and user[8] == '2023/11/28 15:15:36' and user[9] == 0
-  
+
+def test_successful_attempt_login_works(cursor):
+  login_successful = attempt_login(cursor, 'rune@gmail.com', 'rune_pass')
+  assert login_successful
+
+def test_attempt_login_wrong_password(cursor):
+  login_successful = attempt_login(cursor, 'rune@gmail.com', 'this password is wrong')
+  assert not login_successful
+
+def test_attempt_login_wrong_user_name(cursor):
+  login_successful = attempt_login(cursor, 'ruuuune@@gmail....com.', 'rune_pass')
+  assert not login_successful

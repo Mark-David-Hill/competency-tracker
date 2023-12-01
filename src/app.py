@@ -29,8 +29,10 @@ cursor = connection.cursor()
 # print(password)
 
 
-results = get_assessment_results(cursor, 3)
-print(results)
-result_id, user_id, manager_id, assessment_id, user_first_name, user_last_name, manager_first_name, manager_last_name, assessment_name, score, date_taken = results[0]
-print(result_id)
+# results = get_assessment_results(cursor, 3)
+# print(results)
+# result_id, user_id, manager_id, assessment_id, user_first_name, user_last_name, manager_first_name, manager_last_name, assessment_name, score, date_taken = results[0]
+# print(result_id)
 
+login_successful = attempt_login(cursor, 'rune@gmail.com', 'rune_pass')
+print(login_successful)
