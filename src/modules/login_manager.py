@@ -15,6 +15,10 @@ def check_password(password_str, hashed_password):
     # except Exception as e:
     #   print(f'ERROR: {e} Password Check could not be performed.')
 
+def attempt_login(cursor, user_name, password):
+  #  Get user with exact user_name as the email address
+   pass
+
 class User:
    def __init__(self) -> None:
       pass

@@ -40,6 +40,15 @@ def get_users_with_search(cursor, search_str):
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not get Users data.')
 
+def get_user_with_specific_email(cursor, email_str):
+  try:
+    sql_select = '''SELECT user_id, first_name, last_name, phone, email, password, active, date_created, hire_date, user_type
+                  FROM Users WHERE email = ?'''
+    row = cursor.execute(sql_select, (email_str,)).fetchone()
+    return row
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not find user with "{email_str}" User Name.')
+
 def get_competencies(cursor, id = -1, limit = 0, order_by = None):
   try:
     competency_fields = ['name', 'date_created']

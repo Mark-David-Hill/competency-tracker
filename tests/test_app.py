@@ -59,14 +59,6 @@ def test_returns_false_with_incorrect_mark_password(cursor):
   result = check_password(original_password, hash)
   assert result is False
 
-# def test_there_are_at_least_4_active_users(cursor):
-#   users = get_users(cursor)
-#   assert len(users) >= 4
-
-# def test_there_are_at_least_2_active_users(cursor):
-#   users = get_users(cursor)
-#   assert len(users) >= 2
-
 def test_successfully_add_competency(connection):
   rand_str = str(random.randint(0, 100000))
   date_time_str = get_date_time_str()
@@ -282,3 +274,8 @@ def test_add_assessment_results_works(connection):
   all_results = get_assessment_results(cursor)
   test_results = all_results[-1]
   assert test_results[1] == user_id and test_results[2] == manager_id and test_results[3] == assessment_id and test_results[9] == score and test_results[10] == date_time_str
+
+def test_get_user_with_specifi_email_works(cursor):
+  user = get_user_with_specific_email(cursor, 'rune@gmail.com')
+  assert user[0] == 4 and user[1] == 'Rune' and user[2] == 'Hill' and user[3] == '801-222-2222' and user[4] == 'rune@gmail.com' and user[5] == '$2b$12$4COf00M26MAPHZVlElLIFuM3Das9A6pz1ZpH4yMW0KKG.3yjhCLyW' and user[6] == 1 and user[7] == '2023/11/28 15:15:02' and user[8] == '2023/11/28 15:15:36' and user[9] == 0
+  
