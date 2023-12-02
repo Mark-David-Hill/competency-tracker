@@ -21,12 +21,24 @@ def cursor(tmpdir):
   yield connection
   connection.close()
 
+@pytest.fixture
+def login_manager(connection):
+  'Provides a login manager object for testing'
+  login_manager = Login_Manager(connection)
+  yield login_manager
+# @pytest.fixture
+# def login_manager(tmpdir):
+#   'Provides a login manager for testing'
+#   login_manager = Login_Manager(connection)
+#   yield login_manager
+#   login_manager.clear()
+
 def test_get_datetime_str_returns_str():
   datetime_str = get_date_time_str()
   assert isinstance(datetime_str, str)
 
-def test_encrypt_returns_expected_type():
-  hash = encrypt_password('Hello')
+def test_encrypt_returns_expected_type(login_manager):
+  hash = login_manager.encrypt_password('Hello')
   assert isinstance(hash, bytes)
 
 def test_cursor_exists(cursor):
@@ -45,18 +57,18 @@ def test_user_1_is_mark(cursor):
   id, first_name, last_name, phone, email, password, active, date_created, hire_date, user_type = user[0]
   assert id == 1 and first_name == 'Mark' and last_name == 'Hill' and phone == '801-292-7777' and email == 'mark@gmail.com' and password == '$2b$12$JmRFOv1XnLK72syCscNqau9o0P2Xkb5LU4mPVWJ16LFr.gtyditki' and active == 1 and date_created == '2023/11/28 15:05:57' and hire_date == '2023/11/28 15:07:34' and user_type == 1
 
-def test_check_password_works_for_mark(cursor):
-  user = get_users(cursor, 1)
+def test_check_password_works_for_mark(login_manager):
+  user = get_users(login_manager.cursor, 1)
   original_password = 'mark_pass'
   hash = user[0][5]
-  result = check_password(original_password, hash)
+  result = login_manager.check_password(original_password, hash)
   assert result is True
 
-def test_returns_false_with_incorrect_mark_password(cursor):
-  user = get_users(cursor, 1)
+def test_returns_false_with_incorrect_mark_password(login_manager):
+  user = get_users(login_manager.cursor, 1)
   original_password = 'mark_wrong_password'
   hash = user[0][5]
-  result = check_password(original_password, hash)
+  result = login_manager.check_password(original_password, hash)
   assert result is False
 
 def test_successfully_add_competency(connection):
@@ -123,19 +135,19 @@ def test_user_search_works_first_name(cursor):
   users = get_users_with_search(cursor, 'nacti')
   assert users[0][1] == 'Inactiboy' and users[1][1] == 'Inactigirl'
 
-def test_add_user_works(connection):
+def test_add_user_works(login_manager):
   first_name = str(random.randint(0, 100000))
   last_name = str(random.randint(0, 100000))
   phone = str(random.randint(0, 100000))
   email = str(random.randint(0, 100000))
-  password = encrypt_password(str(random.randint(0,100000)))
+  password = login_manager.encrypt_password(str(random.randint(0,100000)))
   active = 1
   date_time_str = get_date_time_str()
   user_type = 1
-  cursor = connection.cursor()
-  add_user(connection, first_name, last_name, phone, email, password, active, date_time_str, date_time_str, user_type)
-  all_users = get_users(cursor)
-  test_user = get_users(cursor, len(all_users))
+  # cursor = connection.cursor()
+  add_user(login_manager.connection, first_name, last_name, phone, email, password, active, date_time_str, date_time_str, user_type)
+  all_users = get_users(login_manager.cursor)
+  test_user = get_users(login_manager.cursor, len(all_users))
   assert test_user[0][1] == first_name and test_user[0][2] == last_name and test_user[0][3] == phone and test_user[0][4] == email and test_user[0][5] == password and test_user[0][6] == active and test_user[0][7] == date_time_str and test_user[0][8] == date_time_str and test_user[0][9] == user_type
 
 def test_edit_user_first_name(connection):
@@ -279,14 +291,14 @@ def test_get_user_with_specifi_email_works(cursor):
   user = get_user_with_specific_email(cursor, 'rune@gmail.com')
   assert user[0] == 4 and user[1] == 'Rune' and user[2] == 'Hill' and user[3] == '801-222-2222' and user[4] == 'rune@gmail.com' and user[5] == '$2b$12$4COf00M26MAPHZVlElLIFuM3Das9A6pz1ZpH4yMW0KKG.3yjhCLyW' and user[6] == 1 and user[7] == '2023/11/28 15:15:02' and user[8] == '2023/11/28 15:15:36' and user[9] == 0
 
-def test_successful_attempt_login_works(cursor):
-  login_successful = attempt_login(cursor, 'rune@gmail.com', 'rune_pass')
+def test_successful_attempt_login_works(login_manager):
+  login_successful = login_manager.attempt_login(login_manager.cursor, 'rune@gmail.com', 'rune_pass')
   assert login_successful
 
-def test_attempt_login_wrong_password(cursor):
-  login_successful = attempt_login(cursor, 'rune@gmail.com', 'this password is wrong')
+def test_attempt_login_wrong_password(login_manager):
+  login_successful = login_manager.attempt_login(cursor, 'rune@gmail.com', 'this password is wrong')
   assert not login_successful
 
-def test_attempt_login_wrong_user_name(cursor):
-  login_successful = attempt_login(cursor, 'ruuuune@@gmail....com.', 'rune_pass')
+def test_attempt_login_wrong_user_name(login_manager):
+  login_successful = login_manager.attempt_login(cursor, 'ruuuune@@gmail....com.', 'rune_pass')
   assert not login_successful
