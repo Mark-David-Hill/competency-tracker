@@ -11,9 +11,18 @@ class Login_Manager:
   
   class User:
   #  Initialize with blank data, add data with successful login?
-   def __init__(self, user_data) -> None:
-      id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type = self.user_data
-      full_name = first_name + ' ' + last_name
+   def __init__(self, id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type) -> None:
+    self.id = id
+    self.first_name = first_name
+    self.last_name = last_name
+    self.phone = phone
+    self.email = email
+    self.password_hash_str = password_hash_str
+    self.is_active = is_active
+    self.date_created = date_created
+    self.hire_date = hire_date
+    self.user_type = user_type
+    self.full_name = self.first_name + ' ' + self.last_name
 
   def encrypt_password(self, password_str):
     bytes = password_str.encode('utf-8')
@@ -36,8 +45,9 @@ class Login_Manager:
       hash_str = user_data[5]
       is_valid_password = self.check_password(password, hash_str)
       if user_data[4] == user_name and is_valid_password:
-        # current_user = User(user_data)
-        # return current_user
+        id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type = user_data
+        self.current_user = self.User(id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type)
+        self.user_logged_in = True
         return True
       else:
         return False
@@ -45,4 +55,10 @@ class Login_Manager:
       print(f'ERROR: Incorrect User Name. Login attempt failed.')
 
   def logout_user(self):
-    pass
+    self.current_user = None
+    self.user_logged_in = False
+
+  def clear(self):
+    self.user_logged_in = False
+    self.current_user = None
+    self.is_manager = False

@@ -26,12 +26,7 @@ def login_manager(connection):
   'Provides a login manager object for testing'
   login_manager = Login_Manager(connection)
   yield login_manager
-# @pytest.fixture
-# def login_manager(tmpdir):
-#   'Provides a login manager for testing'
-#   login_manager = Login_Manager(connection)
-#   yield login_manager
-#   login_manager.clear()
+  login_manager.clear()
 
 def test_get_datetime_str_returns_str():
   datetime_str = get_date_time_str()
@@ -302,3 +297,12 @@ def test_attempt_login_wrong_password(login_manager):
 def test_attempt_login_wrong_user_name(login_manager):
   login_successful = login_manager.attempt_login(cursor, 'ruuuune@@gmail....com.', 'rune_pass')
   assert not login_successful
+
+def test_login_creates_new_current_user(login_manager):
+  login_manager.attempt_login(login_manager.cursor, 'rune@gmail.com', 'rune_pass')
+  assert login_manager.user_logged_in and login_manager.current_user.full_name == 'Rune Hill'
+
+def test_logout_works(login_manager):
+  login_manager.attempt_login(login_manager.cursor, 'rune@gmail.com', 'rune_pass')
+  login_manager.logout_user()
+  assert not login_manager.user_logged_in and not login_manager.current_user
