@@ -48,6 +48,8 @@ class Login_Manager:
         id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type = user_data
         self.current_user = self.User(id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type)
         self.user_logged_in = True
+        if user_data[9]:
+          self.is_manager = True
         return True
       else:
         return False

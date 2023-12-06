@@ -250,9 +250,6 @@ def test_edit_results_date_taken(connection):
 
 def test_delete_results(connection):
   cursor = connection.cursor()
-  # original_results = get_assessment_results(cursor)
-  # last_results_id = original_results[-1][0]
-  # new_results_id = last_results_id + 1
   user_id = random.randint(1, 7)
   manager_id = random.randint(1, 7)
   assessment_id = random.randint(1, 7)
@@ -262,7 +259,6 @@ def test_delete_results(connection):
   all_results = get_assessment_results(cursor)
   latest_result = all_results[-1]
   new_results_id = latest_result[0]
-  # results_length = len(all_results)
   was_deleted = delete_assessment_result(connection, new_results_id)
   new_results = get_assessment_results(cursor)
   new_last_result = new_results[-1]
@@ -306,3 +302,11 @@ def test_logout_works(login_manager):
   login_manager.attempt_login(login_manager.cursor, 'rune@gmail.com', 'rune_pass')
   login_manager.logout_user()
   assert not login_manager.user_logged_in and not login_manager.current_user
+
+def test_set_is_manager_works_for_manager(login_manager):
+  login_manager.attempt_login(login_manager.cursor, 'krystal@gmail.com', 'krystal_pass')
+  assert login_manager.is_manager
+
+def test_set_is_manager_works_for_user(login_manager):
+  login_manager.attempt_login(login_manager.cursor, 'daxter@gmail.com', 'daxter_pass')
+  assert not login_manager.is_manager
