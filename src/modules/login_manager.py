@@ -57,8 +57,13 @@ class Login_Manager:
       print(f'ERROR: Incorrect User Name. Login attempt failed.')
 
   def logout_user(self):
-    self.current_user = None
-    self.user_logged_in = False
+    should_logout = input('Are you sure you want to Logout? (Y/N)')
+    if should_logout.lower() == 'y':
+      self.current_user = None
+      self.user_logged_in = False
+      return True
+    else:
+      return False
 
   def clear(self):
     self.user_logged_in = False
