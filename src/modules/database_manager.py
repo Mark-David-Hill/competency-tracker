@@ -87,7 +87,7 @@ def get_assessments(cursor, id = -1, limit = 0, order_by = None):
 
 def get_assessment_results(cursor, user_id = -1, limit = 0, order_by = None):
   try:
-    if id != -1:
+    if user_id != -1:
       sql_select = '''
         SELECT ar.result_id, ar.user_id, ar.manager_id, ar.assessment_id, u.first_name, u.last_name, m.first_name, m.last_name, a.name, ar.score, ar.date_taken 
         FROM Assessment_results ar
@@ -99,6 +99,7 @@ def get_assessment_results(cursor, user_id = -1, limit = 0, order_by = None):
       rows = cursor.execute(sql_select,(user_id,)).fetchall()
       return rows
     else:
+      print('TESTING. INSIDE SQL SELECT CODE')
       sql_select = '''
         SELECT ar.result_id, ar.user_id, ar.manager_id, ar.assessment_id, u.first_name, u.last_name, m.first_name, m.last_name, a.name, ar.score, ar.date_taken 
         FROM Assessment_results ar
@@ -108,6 +109,21 @@ def get_assessment_results(cursor, user_id = -1, limit = 0, order_by = None):
         '''
       rows = cursor.execute(sql_select).fetchall()
       return rows
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Assessment Result data.')
+
+def get_assessment_results_by_id(cursor, result_id):
+  try:
+    sql_select = '''
+      SELECT ar.result_id, ar.user_id, ar.manager_id, ar.assessment_id, u.first_name, u.last_name, m.first_name, m.last_name, a.name, ar.score, ar.date_taken 
+      FROM Assessment_results ar
+      JOIN Users u ON ar.user_id = u.user_id
+      JOIN Users m ON ar.manager_id = m.user_id
+      JOIN Assessments a ON ar.assessment_id = a.assessment_id
+      WHERE ar.result_id == ?
+      '''
+    rows = cursor.execute(sql_select,(result_id,)).fetchone()
+    return rows
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not get Assessment Result data.')
 
@@ -270,8 +286,6 @@ def view_assessment_results(cursor, user_id):
   user_data = get_users(cursor, user_id)[0]
   user_name = user_data[1] + ' ' + user_data[2]
   rows = get_assessment_results(cursor, user_id)
-  # print('TESTING')
-  # print(rows[0])
   if rows:
     print(f'{"id":<4} {"User":<20} {"Manager":<20} {"Assessment":<50} {"Score":<6} {"Date Taken":20}' )
     for row in rows:
@@ -295,7 +309,6 @@ def view_assessment_results(cursor, user_id):
   else:
     print(f'\n- There are currently no Assessment Results for this User -')
     return False
-  
-# def view_assessment_results_for_current_user():
-#   user_id = login_manager.user.id
-#   view_assessment_results(cursor, user_id)
+
+def view_user_competency_summary(cursor, user_id):
+  pass

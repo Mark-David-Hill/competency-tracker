@@ -74,24 +74,7 @@ manager_menu = {
   '6. Logout': 'logout'
 }
 
-run_menu(main_menu, login_manager)
+# run_menu(main_menu, login_manager)
 
-
-# results = get_results_by_user_and_competency(cursor, 1, 1, 1)
-# print(results)
-
-# view_assessment_results(cursor, 1)
-
-# import random
-# import time
-
-# for i in range(100):
-#   user_id = random.randint(1, 12)
-#   # manager_id = user_id
-#   # manager_id = random.randint(1, 2)
-#   manager_id = random.randint(7, 9)
-#   assessment_id = random.randint(1, 21)
-#   score = random.randint(1, 5)
-#   date = get_date_time_str()
-#   add_assessment_result(connection, user_id, manager_id, assessment_id, score, date)
-#   time.sleep(1)
+results = get_assessment_results(cursor)
+print(results)
