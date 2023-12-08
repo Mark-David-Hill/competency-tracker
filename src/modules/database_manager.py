@@ -85,7 +85,7 @@ def get_assessments(cursor, id = -1, limit = 0, order_by = None):
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not get Assessment data.')
 
-def get_assessment_results(cursor, id = -1, limit = 0, order_by = None):
+def get_assessment_results(cursor, user_id = -1, limit = 0, order_by = None):
   try:
     if id != -1:
       sql_select = '''
@@ -94,9 +94,9 @@ def get_assessment_results(cursor, id = -1, limit = 0, order_by = None):
         JOIN Users u ON ar.user_id = u.user_id
         JOIN Users m ON ar.manager_id = m.user_id
         JOIN Assessments a ON ar.assessment_id = a.assessment_id
-        WHERE ar.result_id == ?
+        WHERE ar.user_id == ?
         '''
-      rows = cursor.execute(sql_select,(id,)).fetchone()
+      rows = cursor.execute(sql_select,(user_id,)).fetchall()
       return rows
     else:
       sql_select = '''
@@ -263,3 +263,39 @@ def delete_assessment_result(connection, id):
     return True
   except Exception as e:
     print(f'\n- ERROR: {e}. Assessment Results were not deleted -')
+
+
+def view_assessment_results(cursor, user_id):
+  print('\n--- Assessment Results ---')
+  user_data = get_users(cursor, user_id)[0]
+  user_name = user_data[1] + ' ' + user_data[2]
+  rows = get_assessment_results(cursor, user_id)
+  # print('TESTING')
+  # print(rows[0])
+  if rows:
+    print(f'{"id":<4} {"User":<20} {"Manager":<20} {"Assessment":<50} {"Score":<6} {"Date Taken":20}' )
+    for row in rows:
+      row_data = []
+      manager_name = ''
+      if row[1] == row[2]:
+        manager_name = 'None'
+      else:
+        manager_data = get_users(cursor, row[2], 1)[0]
+        manager_name = manager_data[1] + ' ' + manager_data[2]
+      for i in range(len(row)):
+        if row[i]:
+          row_data.append(row[i])
+        else:
+          row_data.append('None')
+      try:
+        print(f'{row_data[0]:<4} {user_name:<20} {manager_name:<20} {row_data[8]:<50} {row_data[9]:<6} {row_data[10]:<20}')
+      except Exception as e:
+        print(f'\n- ERROR: {e}. Could not print row data for Assessment Results -')
+    input("\nPress 'Enter' to Continue")
+  else:
+    print(f'\n- There are currently no Assessment Results for this User -')
+    return False
+  
+# def view_assessment_results_for_current_user():
+#   user_id = login_manager.user.id
+#   view_assessment_results(cursor, user_id)

@@ -32,6 +32,10 @@ def login_prompt():
   
 def placeholder():
   print('placeholder')
+
+def view_assessment_results_for_current_user():
+  user_id = login_manager.user.id
+  view_assessment_results(cursor, user_id)
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,
@@ -41,41 +45,42 @@ main_menu = {
 user_menu = {
   "\n--- User Menu ---\n\n1. View/Edit my Profile": placeholder,
   '2. View User Competency Summary': placeholder, #Give option to export report to CSV?
-  '3. View Assessment Results': placeholder,
+  '3. View Assessment Results': view_assessment_results_for_current_user,
   '4. Logout': 'logout'
 }
 
 manager_menu = {
   "\n--- Manager Menu ---\n\n1. View/Edit my Profile": placeholder,
-  '1. Users Menu': {
+  '2. Users Menu': {
     '\n+++ Users Menu +++\n\n1. View All Users': placeholder, # Select user, Allow editing user info, view competency report, view list of assessments
     '2. Search for Users': placeholder, # Select user, Allow editing user info, view competency report, view list of assessments
     '3. Add new User': placeholder,
   },
-  '2. Competencies Menu': {
+  '3. Competencies Menu': {
     '\n+++ Competencies Menu +++\n\n1. View Competencies': placeholder, # Select/edit competencies here
     '2. Add new Competency': placeholder,
     '3. View Competency Report for a User': placeholder,
     '4. Competency report by competency and users': placeholder
   },
-  '3. Assessments Menu': {
+  '4. Assessments Menu': {
     '\n+++ Assessments Menu +++\n\n1. View Assessments': placeholder, # Select/edit competencies here
     '2. Add new Assessment': placeholder
   },
-  '4. Assessment Results Menu': {
+  '5. Assessment Results Menu': {
     '\n+++ Assessment Results Menu +++\n\n1. View Assessment Results': placeholder, # Select/edit competencies here
     '2. Add new Assessment Result': placeholder,
     '3. Delete Assessment Result': placeholder,
   },
-  '5. Logout': 'logout'
+  '6. Logout': 'logout'
 }
 
-# run_menu(main_menu, login_manager)
+run_menu(main_menu, login_manager)
 
 
-results = get_results_by_user_and_competency(cursor, 1, 1, 1)
-print(results)
+# results = get_results_by_user_and_competency(cursor, 1, 1, 1)
+# print(results)
 
+# view_assessment_results(cursor, 1)
 
 # import random
 # import time

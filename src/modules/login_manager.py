@@ -8,6 +8,7 @@ class Login_Manager:
     self.is_manager = False
     self.connection = connection
     self.cursor = connection.cursor()
+    self.user = None
   
   class User:
   #  Initialize with blank data, add data with successful login?
@@ -48,6 +49,7 @@ class Login_Manager:
         id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type = user_data
         self.current_user = self.User(id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type)
         self.user_logged_in = True
+        self.user = self.User(id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type)
         if user_data[9]:
           self.is_manager = True
         return True
@@ -72,3 +74,4 @@ class Login_Manager:
     self.user_logged_in = False
     self.current_user = None
     self.is_manager = False
+    self.user = None
