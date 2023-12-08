@@ -68,11 +68,33 @@ main_menu = {
 
 user_menu = {
   "\n--- User Menu ---\n\n1. View/Edit my Profile": placeholder,
-  '2. View My Competency Data': placeholder, #Give option to export report to CSV?
-  '3. View My Assessment Data': placeholder, #Give option to export report to CSV?
-  '4. Logout': 'logout'
+  '2. View User Competency Summary': placeholder, #Give option to export report to CSV?
+  '3. Logout': 'logout'
 }
 
-manager_menu = {}
+manager_menu = {
+  "\n--- Manager Menu ---\n\n1. View/Edit my Profile": placeholder,
+  '1. Users Menu': {
+    '\n+++ Users Menu +++\n\n1. View All Users': placeholder, # Select user, Allow editing user info, view competency report, view list of assessments
+    '2. Search for Users': placeholder, # Select user, Allow editing user info, view competency report, view list of assessments
+    '3. Add new User': placeholder,
+  },
+  '2. Competencies Menu': {
+    '\n+++ Competencies Menu +++\n\n1. View Competencies': placeholder, # Select/edit competencies here
+    '2. Add new Competency': placeholder,
+    '3. View Competency Report for a User': placeholder,
+    '4. Competency report by competency and users': placeholder
+  },
+  '3. Assessments Menu': {
+    '\n+++ Assessments Menu +++\n\n1. View Assessments': placeholder, # Select/edit competencies here
+    '2. Add new Assessment': placeholder
+  },
+  '4. Assessment Results Menu': {
+    '\n+++ Assessment Results Menu +++\n\n1. View Assessment Results': placeholder, # Select/edit competencies here
+    '2. Add new Assessment Result': placeholder,
+    '3. Delete Assessment Result': placeholder,
+  },
+  '5. Logout': 'logout'
+}
 
 run_menu(main_menu, login_manager)
