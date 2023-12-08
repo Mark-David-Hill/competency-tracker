@@ -111,6 +111,27 @@ def get_assessment_results(cursor, id = -1, limit = 0, order_by = None):
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not get Assessment Result data.')
 
+def get_results_by_user_and_competency(cursor, user_id, competency_id, limit = -1):
+  try:
+    sql_select = '''
+      SELECT ar.result_id, ar.user_id, ar.manager_id, ar.assessment_id, u.first_name, u.last_name, m.first_name, m.last_name, a.name, ar.score, ar.date_taken 
+      FROM Assessment_results ar
+      JOIN Users u ON ar.user_id = u.user_id
+      JOIN Users m ON ar.manager_id = m.user_id
+      JOIN Assessments a ON ar.assessment_id = a.assessment_id
+      WHERE ar.user_id = ? AND a.competency_id = ?
+      ORDER BY ar.date_taken DESC
+      LIMIT ?
+      '''
+    rows = cursor.execute(sql_select,(user_id, competency_id, limit,)).fetchall()
+    return rows
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Assessment Result data.')
+
+# get_user, get_competencies
+# Here, need to get most recent score for each competency and Average competency score across all assessment results
+# competency_name | Most recent Score | Average Score
+
 def add_competency(connection, name, date_created):
   insert_sql = 'INSERT INTO COMPETENCIES (name, date_created) VALUES (?, ?)'
   try:

@@ -16,34 +16,6 @@ connection = sqlite3.connect('src/competency_tracker.db')
 cursor = connection.cursor()
 login_manager = Login_Manager(connection)
 
-# user = get_users(cursor, 1, 1)
-# for field in user[0]:
-#   print(field)
-
-# rows = get_users(cursor, True, 2)
-# for row in rows:
-#   print(row)
-
-# date_time = get_date_time_str()
-# print(date_time)
-
-# password = encrypt_password('test@gmail.com')
-# print(password)
-
-
-# results = get_assessment_results(cursor, 3)
-# print(results)
-# result_id, user_id, manager_id, assessment_id, user_first_name, user_last_name, manager_first_name, manager_last_name, assessment_name, score, date_taken = results[0]
-# print(result_id)
-
-# user_data = login_manager.attempt_login(login_manager.cursor, 'rune@gmail.com', 'rune_pass')
-# # print(login_manager.current_user)
-# print(user_data)
-# id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type = user_data
-# login_manager.current_user = login_manager.User(id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type)
-# print(login_manager.current_user.full_name)
-
-
 def login_prompt():
   username = input('enter username: ')
   password = input('enter password: ')
@@ -69,7 +41,8 @@ main_menu = {
 user_menu = {
   "\n--- User Menu ---\n\n1. View/Edit my Profile": placeholder,
   '2. View User Competency Summary': placeholder, #Give option to export report to CSV?
-  '3. Logout': 'logout'
+  '3. View Assessment Results': placeholder,
+  '4. Logout': 'logout'
 }
 
 manager_menu = {
@@ -97,4 +70,23 @@ manager_menu = {
   '5. Logout': 'logout'
 }
 
-run_menu(main_menu, login_manager)
+# run_menu(main_menu, login_manager)
+
+
+results = get_results_by_user_and_competency(cursor, 1, 1, 1)
+print(results)
+
+
+# import random
+# import time
+
+# for i in range(100):
+#   user_id = random.randint(1, 12)
+#   # manager_id = user_id
+#   # manager_id = random.randint(1, 2)
+#   manager_id = random.randint(7, 9)
+#   assessment_id = random.randint(1, 21)
+#   score = random.randint(1, 5)
+#   date = get_date_time_str()
+#   add_assessment_result(connection, user_id, manager_id, assessment_id, score, date)
+#   time.sleep(1)

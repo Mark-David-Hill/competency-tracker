@@ -38,7 +38,7 @@ def run_menu(menu, login_manager):
           if callable(actions[i]):
             actions[i]()
           elif actions[i] == 'logout':
-            logged_out = login_manager.logout_user()
+            logged_out = login_manager.logout_user_prompt()
             if logged_out is True:
               quit_pending = True
           elif actions[i] == 'quit':

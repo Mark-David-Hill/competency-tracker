@@ -310,3 +310,7 @@ def test_set_is_manager_works_for_manager(login_manager):
 def test_set_is_manager_works_for_user(login_manager):
   login_manager.attempt_login(login_manager.cursor, 'daxter@gmail.com', 'daxter_pass')
   assert not login_manager.is_manager
+
+def test_get_results_by_user_and_competency_works(cursor):
+  results = get_results_by_user_and_competency(cursor, 1, 1)
+  assert results[0]
