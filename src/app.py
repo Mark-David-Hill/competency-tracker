@@ -27,7 +27,7 @@ def login_prompt():
       run_menu(user_menu, login_manager)
     return True
   else:
-    print('incorrect login info. Please try again.')
+    # print('incorrect login info. Please try again.')
     return False
   
 def placeholder():
@@ -42,6 +42,12 @@ def view_current_user_info():
   is_manager = login_manager.is_manager
   view_user_info(cursor, user_id)
   edit_user_info_prompt(connection, cursor, user_id, is_manager, login_manager)
+
+def view_current_user_competency_summary():
+  user_id = login_manager.user.id
+  view_user_info(cursor, user_id)
+  # get_competency_summary_data(cursor, user_id)
+  view_user_competency_summary(cursor, user_id)
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,
@@ -50,13 +56,17 @@ main_menu = {
 
 user_menu = {
   "\n--- User Menu ---\n\n1. View/Edit my Profile": view_current_user_info,
-  '2. View User Competency Summary': placeholder, #Give option to export report to CSV?
+  '2. View User Competency Summary': view_current_user_competency_summary,
   '3. View Assessment Results': view_assessment_results_for_current_user,
   '4. Logout': 'logout'
 }
 
 manager_menu = {
-  "\n--- Manager Menu ---\n\n1. View/Edit my Profile": placeholder,
+  "\n--- Manager Menu ---\n\n1. Personal Profile Menu": {
+    '\n+++ Profile Menu+++\n\n1. View/Edit my Profile': view_current_user_info,
+    '2. View User Competency Summary': view_current_user_competency_summary,
+    '3. View Assessment Results': view_assessment_results_for_current_user,
+  },
   '2. Users Menu': {
     '\n+++ Users Menu +++\n\n1. View All Users': placeholder, # Select user, Allow editing user info, view competency report, view list of assessments
     '2. Search for Users': placeholder, # Select user, Allow editing user info, view competency report, view list of assessments
@@ -81,3 +91,12 @@ manager_menu = {
 }
 
 run_menu(main_menu, login_manager)
+# all_competencies = get_competencies(cursor)
+# print(len(all_competencies))
+# print(get_competency_summary_data(cursor, 1))
+
+# user_id = 4
+# view_user_info(cursor, user_id)
+# # get_competency_summary_data(cursor, user_id)
+# view_user_competency_summary(cursor, user_id)
+# input("\nPress 'Enter' to Continue")

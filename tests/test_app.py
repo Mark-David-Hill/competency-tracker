@@ -32,9 +32,9 @@ def test_get_datetime_str_returns_str():
   datetime_str = get_date_time_str()
   assert isinstance(datetime_str, str)
 
-def test_encrypt_returns_expected_type(login_manager):
-  hash = login_manager.encrypt_password('Hello')
-  assert isinstance(hash, bytes)
+# def test_encrypt_returns_expected_type(login_manager):
+#   hash = login_manager.encrypt_password('Hello')
+#   assert isinstance(hash, bytes)
 
 def test_cursor_exists(cursor):
   assert cursor

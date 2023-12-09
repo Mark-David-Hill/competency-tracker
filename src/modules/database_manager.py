@@ -310,34 +310,68 @@ def get_results_by_user_and_competency(cursor, user_id, competency_id, limit = -
 # Here, need to get most recent score for each competency and Average competency score across all assessment results
 # competency_name | Most recent Score | Average Score
 
-# def view_user_competency_summary(cursor, user_id):
-#   user_data = get_users(cursor, user_id)[0]
-#   user_name = user_data[1] + ' ' + user_data[2]
-#   print(f'\n--- {user_name} Competency Summary ---')
-#   rows = get_assessment_results(cursor, user_id)
-#   if rows:
-#     print(f'{"id":<4} {"Name":<20} {"Phone":<20} {"Email":<50}')
-#     for row in rows:
-#       row_data = []
-#       manager_name = ''
-#       if row[1] == row[2]:
-#         manager_name = 'None'
-#       else:
-#         manager_data = get_users(cursor, row[2], 1)[0]
-#         manager_name = manager_data[1] + ' ' + manager_data[2]
-#       for i in range(len(row)):
-#         if row[i]:
-#           row_data.append(row[i])
-#         else:
-#           row_data.append('None')
-#       try:
-#         print(f'{row_data[0]:<4} {user_name:<20} {manager_name:<20} {row_data[8]:<50} {row_data[9]:<6} {row_data[10]:<20}')
-#       except Exception as e:
-#         print(f'\n- ERROR: {e}. Could not print row data for Assessment Results -')
-#     input("\nPress 'Enter' to Continue")
-#   else:
-#     print(f'\n- There are currently no Assessment Results for this User -')
-#     return False
+def get_competency_summary_data(cursor, user_id, competency_id):
+  try:
+    sql_select = '''
+      SELECT c.name, ar.score, AVG(ar.score)
+      FROM Assessment_results ar
+      JOIN Assessments a ON ar.assessment_id = a.assessment_id
+      JOIN Competencies c ON a.competency_id = c.competency_id
+      WHERE ar.user_id = ? AND a.competency_id = ?
+      ORDER BY ar.date_taken DESC
+      '''
+    rows = cursor.execute(sql_select,(user_id, competency_id,)).fetchall()
+    return rows
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Competency Summary Data.')
+
+def get_most_recent_score(cursor, user_id, competency_id):
+  try:
+    sql_select = '''
+      SELECT ar.score
+      FROM Assessment_results ar
+      JOIN Assessments a ON ar.assessment_id = a.assessment_id
+      JOIN Competencies c ON a.competency_id = c.competency_id
+      WHERE ar.user_id = ? AND a.competency_id = ?
+      ORDER BY ar.date_taken DESC
+      '''
+    row = cursor.execute(sql_select,(user_id, competency_id,)).fetchone()
+    return row
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Competency Summary Data.')
+
+def view_user_competency_summary(cursor, user_id):
+  user_data = get_users(cursor, user_id)[0]
+  user_name = user_data[1] + ' ' + user_data[2]
+  print(f'\n--- {user_name} Competency Summary ---')
+  rows = []
+  recent_scores = []
+  all_competencies = get_competencies(cursor)
+  for i in range(len(all_competencies)):
+    row = get_competency_summary_data(cursor, user_id, i + 1)
+    rows.append(row)
+    recent_score = get_most_recent_score(cursor, user_id, i + 1)
+    recent_scores.append(recent_score[0])
+  if rows:
+    print(f'{"Competency":<30} {"Score":<7} {"Ave Score":<5}')
+    for i in range(len(rows)):
+      row = rows[i]
+      row_data = []
+      for j in range(len(row)):
+        if row[j]:
+          row_data.append(row[j])
+        else:
+          row_data.append('None')
+      try:
+        row = row_data[0]
+        most_recent_score = recent_scores[i]
+        print(f'{row[0]:<30} {most_recent_score:<7} {row[2]:<5.2f}')
+      except Exception as e:
+        print(f'\n- ERROR: {e}. Could not print row data for Competency Results -')
+    input("\nPress 'Enter' to Continue")
+  else:
+    print(f'\n- There are currently no Competency Results for this User -')
+    return False
 
 def view_user_info(cursor, user_id):
   print('\n--- User Profile ---')

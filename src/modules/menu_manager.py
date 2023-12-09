@@ -45,7 +45,7 @@ def run_menu(menu, login_manager):
             print('\n - Goodbye! -')
             quit_pending = True
           else:
-            quit_pending = run_menu(actions[i])
+            quit_pending = run_menu(actions[i], login_manager)
     else:
       print("\nSorry, I didn't understand your selection. Please enter a valid option.")
     if quit_pending == True:

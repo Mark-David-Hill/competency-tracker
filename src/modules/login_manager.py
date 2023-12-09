@@ -44,24 +44,31 @@ class Login_Manager:
   def attempt_login(self, cursor, user_name, password):
     try:
       user_data = get_user_with_specific_email(cursor, user_name)
+      is_active = user_data[6]
       hash_str = user_data[5]
       is_valid_password = self.check_password(password, hash_str)
       if user_data[4] == user_name and is_valid_password:
-        id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type = user_data
-        self.current_user = self.User(id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type)
-        self.user_logged_in = True
-        self.user = self.User(id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type)
-        if user_data[9]:
-          self.is_manager = True
-        return True
+        if is_active:
+          id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type = user_data
+          self.current_user = self.User(id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type)
+          self.user_logged_in = True
+          self.user = self.User(id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type)
+          if user_data[9]:
+            self.is_manager = True
+          return True
+        else:
+          print('- Sorry, Inactive Users cannot Login. -')
+          return False
       else:
+        print('- Incorrect User Name or Password. Login attempt failed.')
         return False
     except:
-      print(f'ERROR: Incorrect User Name. Login attempt failed.')
+      print(f'ERROR: Incorrect User Name or Password. Login attempt failed.')
 
   def logout_user(self):
     self.current_user = None
     self.user_logged_in = False
+    self.is_manager = False
     
   def logout_user_prompt(self):
     should_logout = input('Are you sure you want to Logout? (Y/N)')
