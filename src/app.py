@@ -43,6 +43,14 @@ def view_current_user_info():
   view_user_info(cursor, user_id)
   edit_user_info_prompt(connection, cursor, user_id, is_manager, login_manager)
 
+def view_all_users():
+  view_all_users_info(cursor)
+  user_id = get_user_id_prompt()
+  view_user_info(cursor, user_id)
+  is_manager = login_manager.is_manager
+  edit_user_info_prompt(connection, cursor, user_id, is_manager, login_manager)
+  # Menu options for selecting specific user.
+
 def view_current_user_competency_summary():
   user_id = login_manager.user.id
   view_user_info(cursor, user_id)
@@ -68,14 +76,14 @@ manager_menu = {
     '3. View Assessment Results': view_assessment_results_for_current_user,
   },
   '2. Users Menu': {
-    '\n+++ Users Menu +++\n\n1. View All Users': placeholder, # Select user, Allow editing user info, view competency report, view list of assessments
-    '2. Search for Users': placeholder, # Select user, Allow editing user info, view competency report, view list of assessments
+    '\n+++ Users Menu +++\n\n1. View All Users': view_all_users, # Select user, Allow editing user info, view competency report, view list of assessments, add assessment result for user
+    '2. Search for Users': placeholder, # Select user, Allow editing user info, view competency report, view list of assessments, add assessment result for user
     '3. Add new User': placeholder,
   },
   '3. Competencies Menu': {
-    '\n+++ Competencies Menu +++\n\n1. View Competencies': placeholder, # Select/edit competencies here
+    '\n+++ Competencies Menu +++\n\n1. View Competencies': placeholder, # Select/edit competencies here, or view report of all users and their competency levels for specific competency
     '2. Add new Competency': placeholder,
-    '3. View Competency Report for a User': placeholder,
+    # '3. View Competency Report for a User': placeholder,
     '4. Competency report by competency and users': placeholder
   },
   '4. Assessments Menu': {

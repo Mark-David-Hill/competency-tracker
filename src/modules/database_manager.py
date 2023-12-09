@@ -425,6 +425,10 @@ def view_all_users_info(cursor):
     print(f'\n- There are currently no Active People -')
     return False
   
+def get_user_id_prompt():
+  id = input('\nPlease enter the id of the person you would like view/edit the info for: ')
+  return id
+  
 def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login_manager):
   user_data = get_users(cursor, user_id)[0]
   id, first_name, last_name, phone, email, password, is_active, date_created, hire_date, user_type = user_data
