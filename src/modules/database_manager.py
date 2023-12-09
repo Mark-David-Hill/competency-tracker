@@ -127,27 +127,6 @@ def get_assessment_results_by_id(cursor, result_id):
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not get Assessment Result data.')
 
-def get_results_by_user_and_competency(cursor, user_id, competency_id, limit = -1):
-  try:
-    sql_select = '''
-      SELECT ar.result_id, ar.user_id, ar.manager_id, ar.assessment_id, u.first_name, u.last_name, m.first_name, m.last_name, a.name, ar.score, ar.date_taken 
-      FROM Assessment_results ar
-      JOIN Users u ON ar.user_id = u.user_id
-      JOIN Users m ON ar.manager_id = m.user_id
-      JOIN Assessments a ON ar.assessment_id = a.assessment_id
-      WHERE ar.user_id = ? AND a.competency_id = ?
-      ORDER BY ar.date_taken DESC
-      LIMIT ?
-      '''
-    rows = cursor.execute(sql_select,(user_id, competency_id, limit,)).fetchall()
-    return rows
-  except Exception as e:
-    print(f'\n- ERROR: {e}. Could not get Assessment Result data.')
-
-# get_user, get_competencies
-# Here, need to get most recent score for each competency and Average competency score across all assessment results
-# competency_name | Most recent Score | Average Score
-
 def add_competency(connection, name, date_created):
   insert_sql = 'INSERT INTO COMPETENCIES (name, date_created) VALUES (?, ?)'
   try:
@@ -287,7 +266,7 @@ def view_assessment_results(cursor, user_id):
   user_name = user_data[1] + ' ' + user_data[2]
   rows = get_assessment_results(cursor, user_id)
   if rows:
-    print(f'{"id":<4} {"User":<20} {"Manager":<20} {"Assessment":<50} {"Score":<6} {"Date Taken":20}' )
+    print(f'{"id":<4} {"User":<20} {"Manager":<20} {"Assessment":<50} {"Score":<6} {"Date Taken":<20}' )
     for row in rows:
       row_data = []
       manager_name = ''
@@ -309,6 +288,163 @@ def view_assessment_results(cursor, user_id):
   else:
     print(f'\n- There are currently no Assessment Results for this User -')
     return False
+  
+def get_results_by_user_and_competency(cursor, user_id, competency_id, limit = -1):
+  try:
+    sql_select = '''
+      SELECT ar.result_id, ar.user_id, ar.manager_id, ar.assessment_id, u.first_name, u.last_name, m.first_name, m.last_name, a.name, ar.score, ar.date_taken 
+      FROM Assessment_results ar
+      JOIN Users u ON ar.user_id = u.user_id
+      JOIN Users m ON ar.manager_id = m.user_id
+      JOIN Assessments a ON ar.assessment_id = a.assessment_id
+      WHERE ar.user_id = ? AND a.competency_id = ?
+      ORDER BY ar.date_taken DESC
+      LIMIT ?
+      '''
+    rows = cursor.execute(sql_select,(user_id, competency_id, limit,)).fetchall()
+    return rows
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Assessment Result data.')
 
-def view_user_competency_summary(cursor, user_id):
-  pass
+# get_user, get_competencies
+# Here, need to get most recent score for each competency and Average competency score across all assessment results
+# competency_name | Most recent Score | Average Score
+
+# def view_user_competency_summary(cursor, user_id):
+#   user_data = get_users(cursor, user_id)[0]
+#   user_name = user_data[1] + ' ' + user_data[2]
+#   print(f'\n--- {user_name} Competency Summary ---')
+#   rows = get_assessment_results(cursor, user_id)
+#   if rows:
+#     print(f'{"id":<4} {"Name":<20} {"Phone":<20} {"Email":<50}')
+#     for row in rows:
+#       row_data = []
+#       manager_name = ''
+#       if row[1] == row[2]:
+#         manager_name = 'None'
+#       else:
+#         manager_data = get_users(cursor, row[2], 1)[0]
+#         manager_name = manager_data[1] + ' ' + manager_data[2]
+#       for i in range(len(row)):
+#         if row[i]:
+#           row_data.append(row[i])
+#         else:
+#           row_data.append('None')
+#       try:
+#         print(f'{row_data[0]:<4} {user_name:<20} {manager_name:<20} {row_data[8]:<50} {row_data[9]:<6} {row_data[10]:<20}')
+#       except Exception as e:
+#         print(f'\n- ERROR: {e}. Could not print row data for Assessment Results -')
+#     input("\nPress 'Enter' to Continue")
+#   else:
+#     print(f'\n- There are currently no Assessment Results for this User -')
+#     return False
+
+def view_user_info(cursor, user_id):
+  print('\n--- User Profile ---')
+  rows = get_users(cursor, user_id)
+  if rows:
+    print(f'{"id":<2} {"First Name":<12} {"Last Name":<12} {"Phone":<15} {"Email":<25} {"Active":<7} {"Date Created":<20} {"Hire Date":<20} {"User Type":<8}')
+    for row in rows:
+      row_data = []
+      for i in range(len(row)):
+        if row[i]:
+          row_data.append(row[i])
+        else:
+          row_data.append('None')
+      is_active_str = 'False'
+      if row_data[6] == 1:
+        is_active_str = 'True'
+      user_type_str = 'User'
+      if row_data[9] == 1:
+        user_type_str = 'Manager'
+      try:
+        print(f'{row_data[0]:<2} {row_data[1]:<12} {row_data[2]:<12} {row_data[3]:<15} {row_data[4]:<25} {is_active_str:<7} {row_data[7]:<20} {row_data[8]:<20} {user_type_str:<8}')
+      except Exception as e:
+        print(f'\n- ERROR: {e}. Could not print row data for person -')
+  else:
+    print(f'\n- There are currently no Active People -')
+    return False
+  
+def view_all_users_info(cursor):
+  print('\n--- User Profile ---')
+  rows = get_users(cursor)
+  if rows:
+    print(f'{"id":<2} {"First Name":<12} {"Last Name":<12} {"Phone":<15} {"Email":<25} {"Active":<7} {"Date Created":<20} {"Hire Date":<20} {"User Type":<8}')
+    for row in rows:
+      row_data = []
+      for i in range(len(row)):
+        if row[i]:
+          row_data.append(row[i])
+        else:
+          row_data.append('None')
+      is_active_str = 'False'
+      if row_data[6] == 1:
+        is_active_str = 'True'
+      user_type_str = 'User'
+      if row_data[9] == 1:
+        user_type_str = 'Manager'
+      try:
+        print(f'{row_data[0]:<2} {row_data[1]:<12} {row_data[2]:<12} {row_data[3]:<15} {row_data[4]:<25} {is_active_str:<7} {row_data[7]:<20} {row_data[8]:<20} {user_type_str:<8}')
+      except Exception as e:
+        print(f'\n- ERROR: {e}. Could not print row data for person -')
+  else:
+    print(f'\n- There are currently no Active People -')
+    return False
+  
+def edit_user_info_prompt(connection, cursor, user_id, current_is_manager):
+  user_data = get_users(cursor, user_id)[0]
+  id, first_name, last_name, phone, email, password, is_active, date_created, hire_date, user_type = user_data
+  edit_user_choice = input("\nTo update a field, enter the first letter of the field.\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
+  if edit_user_choice == 'i':
+    print("\nThe User's ID cannot be changed.")
+  elif edit_user_choice == 'f':
+    print(f'\nCurrent First Name: {first_name}')
+    new_first_name = input('New First Name: ')
+    edit_user(connection, user_id, 'first_name', new_first_name)
+  elif edit_user_choice == 'l':
+    print(f'\nCurrent Last Name: {last_name}')
+    new_last_name = input('New Last Name: ')
+    edit_user(connection, user_id, 'last_name', new_last_name)
+  elif edit_user_choice == 'p':
+    print(f'\nCurrent Phone Number: {phone}')
+    new_phone = input('New Phone Number: ')
+    edit_user(connection, user_id, 'phone', new_phone)
+  elif edit_user_choice == 'e':
+    print(f'\nCurrent Phone Email: {email}')
+    new_email = input('New Email: ')
+    edit_user(connection, user_id, 'email', new_email)
+  elif edit_user_choice == 'a':
+    if current_is_manager:
+      if is_active == 1:
+        choice = input(f"User '{first_name} {last_name}' is currently active. Do you want to deactivate this user? If deactivated they will no longer be able to log in. (Y/N): ")
+        if choice.lower() == 'y':
+          edit_user(connection, user_id, 'active', 0)
+      elif is_active == 0:
+        choice = input(f"User '{first_name} {last_name}' is currently inactive. Do you want to activate this user? (Y/N): ")
+        if choice.lower() == 'y':
+          edit_user(connection, user_id, 'active', 1)
+    else:
+      print('Sorry, only Managers are allowed to activate or deactivate Users.')
+  elif edit_user_choice == 'd':
+    print(f'\nCurrent Date Created: {date_created}')
+    new_date_created = input('New Date Created: ')
+    edit_user(connection, user_id, 'date_created', new_date_created)
+  elif edit_user_choice == 'h':
+    print(f'\nCurrent Hire Date: {hire_date}')
+    new_hire_date = input('New Hire Date: ')
+    edit_user(connection, user_id, 'hire_date', new_hire_date)
+  elif edit_user_choice == 'u':
+    if current_is_manager:
+      if user_type == 1:
+        choice = input(f"User '{first_name} {last_name}' is currently a Manager. Do you want to change them to be a standard User? (Y/N): ")
+        if choice.lower() == 'y':
+          edit_user(connection, user_id, 'user_type', 0)
+      elif user_type == 0:
+        choice = input(f"User '{first_name} {last_name}' is currently a standard User. Do you want to change them to be a manager? (Y/N): ")
+        if choice.lower() == 'y':
+          edit_user(connection, user_id, 'user_type', 1)
+    else:
+      print("Sorry, only Managers are allowed to change a User's Type.")
+  
+  
+    

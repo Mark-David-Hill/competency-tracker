@@ -36,6 +36,12 @@ def placeholder():
 def view_assessment_results_for_current_user():
   user_id = login_manager.user.id
   view_assessment_results(cursor, user_id)
+
+def view_current_user_info():
+  user_id = login_manager.user.id
+  is_manager = login_manager.is_manager
+  view_user_info(cursor, user_id)
+  edit_user_info_prompt(connection, cursor, user_id, is_manager)
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,
@@ -43,7 +49,7 @@ main_menu = {
 }
 
 user_menu = {
-  "\n--- User Menu ---\n\n1. View/Edit my Profile": placeholder,
+  "\n--- User Menu ---\n\n1. View/Edit my Profile": view_current_user_info,
   '2. View User Competency Summary': placeholder, #Give option to export report to CSV?
   '3. View Assessment Results': view_assessment_results_for_current_user,
   '4. Logout': 'logout'
@@ -74,7 +80,4 @@ manager_menu = {
   '6. Logout': 'logout'
 }
 
-# run_menu(main_menu, login_manager)
-
-results = get_assessment_results(cursor)
-print(results)
+run_menu(main_menu, login_manager)
