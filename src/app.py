@@ -41,7 +41,7 @@ def view_current_user_info():
   user_id = login_manager.user.id
   is_manager = login_manager.is_manager
   view_user_info(cursor, user_id)
-  edit_user_info_prompt(connection, cursor, user_id, is_manager)
+  edit_user_info_prompt(connection, cursor, user_id, is_manager, login_manager)
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,

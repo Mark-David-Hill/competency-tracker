@@ -29,7 +29,8 @@ class Login_Manager:
     bytes = password_str.encode('utf-8')
     salt = bcrypt.gensalt()
     hash = bcrypt.hashpw(bytes, salt)
-    return hash
+    hash_str = hash.decode('utf-8')
+    return hash_str
 
   def check_password(self, password_str, hashed_password):
       # try:

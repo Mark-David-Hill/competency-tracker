@@ -391,10 +391,10 @@ def view_all_users_info(cursor):
     print(f'\n- There are currently no Active People -')
     return False
   
-def edit_user_info_prompt(connection, cursor, user_id, current_is_manager):
+def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login_manager):
   user_data = get_users(cursor, user_id)[0]
   id, first_name, last_name, phone, email, password, is_active, date_created, hire_date, user_type = user_data
-  edit_user_choice = input("\nTo update a field, enter the first letter of the field.\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
+  edit_user_choice = input("\nTo update a field, enter the first letter of the field.\nTo change the User's password, type 'PASSWORD'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
   if edit_user_choice == 'i':
     print("\nThe User's ID cannot be changed.")
   elif edit_user_choice == 'f':
@@ -445,6 +445,21 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager):
           edit_user(connection, user_id, 'user_type', 1)
     else:
       print("Sorry, only Managers are allowed to change a User's Type.")
+  elif edit_user_choice.lower() == 'password':
+      password_guess = input("Please input the user's current password: ")
+      is_correct_password = login_manager.check_password(password_guess, password)
+      if is_correct_password:
+        new_password = input('Please Choose a new Password: ')
+        new_password_2 = input('Please re-type the new Password: ')
+        if new_password == new_password_2:
+          new_hash = login_manager.encrypt_password(new_password)
+          new_hash_bytes = bytes(new_hash, 'utf-8')
+          # user_bytes = password_str.encode('utf-8')
+          edit_user(connection, user_id, 'password', new_hash)
+        else:
+          print('- Sorry, the two passwords entered did not match. Please try again. -')
+      else:
+        print('- Sorry, that password was incorrect. Please try again. -')
   
   
     

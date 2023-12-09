@@ -7,11 +7,13 @@ connection = sqlite3.connect('src/competency_tracker.db')
 cursor = connection.cursor()
 login_manager = Login_Manager(connection)
 
-# password = login_manager.encrypt_password('fiver_pass')
-# print(password)
+password = login_manager.encrypt_password('fiver_pass')
+password_str = str(password)
+print(password)
+print(password_str)
 
-date = get_date_time_str()
-print(date)
+# date = get_date_time_str()
+# print(date)
 
 
 # results = get_results_by_user_and_competency(cursor, 1, 1, 1)
