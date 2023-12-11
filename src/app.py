@@ -48,7 +48,7 @@ def view_all_users():
   user_id = get_user_id_prompt()
   view_user_info(cursor, user_id)
   is_manager = login_manager.is_manager
-  edit_user_info_prompt(connection, cursor, user_id, is_manager, login_manager)
+  edit_user_info_prompt(connection, cursor, user_id, is_manager, login_manager, True)
   # Menu options for selecting specific user.
 
 def view_current_user_competency_summary():

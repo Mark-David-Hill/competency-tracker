@@ -374,30 +374,33 @@ def view_user_competency_summary(cursor, user_id):
     return False
 
 def view_user_info(cursor, user_id):
-  print('\n--- User Profile ---')
-  rows = get_users(cursor, user_id)
-  if rows:
-    print(f'{"id":<2} {"First Name":<12} {"Last Name":<12} {"Phone":<15} {"Email":<25} {"Active":<7} {"Date Created":<20} {"Hire Date":<20} {"User Type":<8}')
-    for row in rows:
-      row_data = []
-      for i in range(len(row)):
-        if row[i]:
-          row_data.append(row[i])
-        else:
-          row_data.append('None')
-      is_active_str = 'False'
-      if row_data[6] == 1:
-        is_active_str = 'True'
-      user_type_str = 'User'
-      if row_data[9] == 1:
-        user_type_str = 'Manager'
-      try:
-        print(f'{row_data[0]:<2} {row_data[1]:<12} {row_data[2]:<12} {row_data[3]:<15} {row_data[4]:<25} {is_active_str:<7} {row_data[7]:<20} {row_data[8]:<20} {user_type_str:<8}')
-      except Exception as e:
-        print(f'\n- ERROR: {e}. Could not print row data for person -')
-  else:
-    print(f'\n- There are currently no Active People -')
-    return False
+  try:
+    print('\n--- User Profile ---')
+    rows = get_users(cursor, user_id)
+    if rows:
+      print(f'{"id":<2} {"First Name":<12} {"Last Name":<12} {"Phone":<15} {"Email":<25} {"Active":<7} {"Date Created":<20} {"Hire Date":<20} {"User Type":<8}')
+      for row in rows:
+        row_data = []
+        for i in range(len(row)):
+          if row[i]:
+            row_data.append(row[i])
+          else:
+            row_data.append('None')
+        is_active_str = 'False'
+        if row_data[6] == 1:
+          is_active_str = 'True'
+        user_type_str = 'User'
+        if row_data[9] == 1:
+          user_type_str = 'Manager'
+        try:
+          print(f'{row_data[0]:<2} {row_data[1]:<12} {row_data[2]:<12} {row_data[3]:<15} {row_data[4]:<25} {is_active_str:<7} {row_data[7]:<20} {row_data[8]:<20} {user_type_str:<8}')
+        except Exception as e:
+          print(f'\n- ERROR: {e}. Could not print row data for person -')
+    else:
+      print(f'\n- Could not retrieve data for User with that ID -')
+      return False
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get info for that User -')
   
 def view_all_users_info(cursor):
   print('\n--- User Profile ---')
@@ -420,84 +423,95 @@ def view_all_users_info(cursor):
       try:
         print(f'{row_data[0]:<2} {row_data[1]:<12} {row_data[2]:<12} {row_data[3]:<15} {row_data[4]:<25} {is_active_str:<7} {row_data[7]:<20} {row_data[8]:<20} {user_type_str:<8}')
       except Exception as e:
-        print(f'\n- ERROR: {e}. Could not print row data for person -')
+        print(f'\n- ERROR: {e}. Could not print row data for that User -')
   else:
     print(f'\n- There are currently no Active People -')
     return False
   
 def get_user_id_prompt():
-  id = input('\nPlease enter the id of the person you would like view/edit the info for: ')
+  id = input('\nPlease enter the id of the User you would like view/edit the info for: ')
   return id
   
-def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login_manager):
-  user_data = get_users(cursor, user_id)[0]
-  id, first_name, last_name, phone, email, password, is_active, date_created, hire_date, user_type = user_data
-  edit_user_choice = input("\nTo update a field, enter the first letter of the field.\nTo change the User's password, type 'PASSWORD'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
-  if edit_user_choice == 'i':
-    print("\nThe User's ID cannot be changed.")
-  elif edit_user_choice == 'f':
-    print(f'\nCurrent First Name: {first_name}')
-    new_first_name = input('New First Name: ')
-    edit_user(connection, user_id, 'first_name', new_first_name)
-  elif edit_user_choice == 'l':
-    print(f'\nCurrent Last Name: {last_name}')
-    new_last_name = input('New Last Name: ')
-    edit_user(connection, user_id, 'last_name', new_last_name)
-  elif edit_user_choice == 'p':
-    print(f'\nCurrent Phone Number: {phone}')
-    new_phone = input('New Phone Number: ')
-    edit_user(connection, user_id, 'phone', new_phone)
-  elif edit_user_choice == 'e':
-    print(f'\nCurrent Phone Email: {email}')
-    new_email = input('New Email: ')
-    edit_user(connection, user_id, 'email', new_email)
-  elif edit_user_choice == 'a':
-    if current_is_manager:
-      if is_active == 1:
-        choice = input(f"User '{first_name} {last_name}' is currently active. Do you want to deactivate this user? If deactivated they will no longer be able to log in. (Y/N): ")
-        if choice.lower() == 'y':
-          edit_user(connection, user_id, 'active', 0)
-      elif is_active == 0:
-        choice = input(f"User '{first_name} {last_name}' is currently inactive. Do you want to activate this user? (Y/N): ")
-        if choice.lower() == 'y':
-          edit_user(connection, user_id, 'active', 1)
+def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login_manager, is_view_all_mode = False):
+  try:
+    user_data = get_users(cursor, user_id)[0]
+    id, first_name, last_name, phone, email, password, is_active, date_created, hire_date, user_type = user_data
+    edit_user_choice = ''
+    if is_view_all_mode:
+      edit_user_choice = input("\nTo update a field, enter the first letter of the field.\nTo change the User's password, type 'PASSWORD'\nTo view this User's Competency Summary, type 'SUMMARY'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
     else:
-      print('Sorry, only Managers are allowed to activate or deactivate Users.')
-  elif edit_user_choice == 'd':
-    print(f'\nCurrent Date Created: {date_created}')
-    new_date_created = input('New Date Created: ')
-    edit_user(connection, user_id, 'date_created', new_date_created)
-  elif edit_user_choice == 'h':
-    print(f'\nCurrent Hire Date: {hire_date}')
-    new_hire_date = input('New Hire Date: ')
-    edit_user(connection, user_id, 'hire_date', new_hire_date)
-  elif edit_user_choice == 'u':
-    if current_is_manager:
-      if user_type == 1:
-        choice = input(f"User '{first_name} {last_name}' is currently a Manager. Do you want to change them to be a standard User? (Y/N): ")
-        if choice.lower() == 'y':
-          edit_user(connection, user_id, 'user_type', 0)
-      elif user_type == 0:
-        choice = input(f"User '{first_name} {last_name}' is currently a standard User. Do you want to change them to be a manager? (Y/N): ")
-        if choice.lower() == 'y':
-          edit_user(connection, user_id, 'user_type', 1)
-    else:
-      print("Sorry, only Managers are allowed to change a User's Type.")
-  elif edit_user_choice.lower() == 'password':
-      password_guess = input("Please input the user's current password: ")
-      is_correct_password = login_manager.check_password(password_guess, password)
-      if is_correct_password:
-        new_password = input('Please Choose a new Password: ')
-        new_password_2 = input('Please re-type the new Password: ')
-        if new_password == new_password_2:
-          new_hash = login_manager.encrypt_password(new_password)
-          new_hash_bytes = bytes(new_hash, 'utf-8')
-          # user_bytes = password_str.encode('utf-8')
-          edit_user(connection, user_id, 'password', new_hash)
-        else:
-          print('- Sorry, the two passwords entered did not match. Please try again. -')
+      edit_user_choice = input("\nTo update a field, enter the first letter of the field.\nTo change the User's password, type 'PASSWORD'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
+    
+    if edit_user_choice == 'i':
+      print("\nThe User's ID cannot be changed.")
+    elif edit_user_choice == 'f':
+      print(f'\nCurrent First Name: {first_name}')
+      new_first_name = input('New First Name: ')
+      edit_user(connection, user_id, 'first_name', new_first_name)
+    elif edit_user_choice == 'l':
+      print(f'\nCurrent Last Name: {last_name}')
+      new_last_name = input('New Last Name: ')
+      edit_user(connection, user_id, 'last_name', new_last_name)
+    elif edit_user_choice == 'p':
+      print(f'\nCurrent Phone Number: {phone}')
+      new_phone = input('New Phone Number: ')
+      edit_user(connection, user_id, 'phone', new_phone)
+    elif edit_user_choice == 'e':
+      print(f'\nCurrent Phone Email: {email}')
+      new_email = input('New Email: ')
+      edit_user(connection, user_id, 'email', new_email)
+    elif edit_user_choice == 'a':
+      if current_is_manager:
+        if is_active == 1:
+          choice = input(f"User '{first_name} {last_name}' is currently active. Do you want to deactivate this user? If deactivated they will no longer be able to log in. (Y/N): ")
+          if choice.lower() == 'y':
+            edit_user(connection, user_id, 'active', 0)
+        elif is_active == 0:
+          choice = input(f"User '{first_name} {last_name}' is currently inactive. Do you want to activate this user? (Y/N): ")
+          if choice.lower() == 'y':
+            edit_user(connection, user_id, 'active', 1)
       else:
-        print('- Sorry, that password was incorrect. Please try again. -')
+        print('Sorry, only Managers are allowed to activate or deactivate Users.')
+    elif edit_user_choice == 'd':
+      print(f'\nCurrent Date Created: {date_created}')
+      new_date_created = input('New Date Created: ')
+      edit_user(connection, user_id, 'date_created', new_date_created)
+    elif edit_user_choice == 'h':
+      print(f'\nCurrent Hire Date: {hire_date}')
+      new_hire_date = input('New Hire Date: ')
+      edit_user(connection, user_id, 'hire_date', new_hire_date)
+    elif edit_user_choice == 'u':
+      if current_is_manager:
+        if user_type == 1:
+          choice = input(f"User '{first_name} {last_name}' is currently a Manager. Do you want to change them to be a standard User? (Y/N): ")
+          if choice.lower() == 'y':
+            edit_user(connection, user_id, 'user_type', 0)
+        elif user_type == 0:
+          choice = input(f"User '{first_name} {last_name}' is currently a standard User. Do you want to change them to be a manager? (Y/N): ")
+          if choice.lower() == 'y':
+            edit_user(connection, user_id, 'user_type', 1)
+      else:
+        print("Sorry, only Managers are allowed to change a User's Type.")
+    elif edit_user_choice.lower() == 'password':
+        password_guess = input("Please input the user's current password: ")
+        is_correct_password = login_manager.check_password(password_guess, password)
+        if is_correct_password:
+          new_password = input('Please Choose a new Password: ')
+          new_password_2 = input('Please re-type the new Password: ')
+          if new_password == new_password_2:
+            new_hash = login_manager.encrypt_password(new_password)
+            new_hash_bytes = bytes(new_hash, 'utf-8')
+            # user_bytes = password_str.encode('utf-8')
+            edit_user(connection, user_id, 'password', new_hash)
+          else:
+            print('- Sorry, the two passwords entered did not match. Please try again. -')
+        else:
+          print('- Sorry, that password was incorrect. Please try again. -')
+    elif is_view_all_mode and edit_user_choice.lower() == 'summary':
+      view_user_info(cursor, user_id)
+      view_user_competency_summary(cursor, user_id)
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not fulfill the request -')
   
   
     
