@@ -402,9 +402,13 @@ def view_user_info(cursor, user_id):
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not get info for that User -')
   
-def view_all_users_info(cursor):
+def view_all_users_info(cursor, search_str = None):
   print('\n--- User Profile ---')
-  rows = get_users(cursor)
+  rows = None
+  if not search_str:
+    rows = get_users(cursor)
+  else:
+    rows = get_users_with_search(cursor, search_str)
   if rows:
     print(f'{"id":<2} {"First Name":<12} {"Last Name":<12} {"Phone":<15} {"Email":<25} {"Active":<7} {"Date Created":<20} {"Hire Date":<20} {"User Type":<8}')
     for row in rows:
