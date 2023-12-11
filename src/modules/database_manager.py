@@ -67,7 +67,7 @@ def get_assessments(cursor, id = -1, limit = 0, order_by = None):
   try:
     if id != -1:
       sql_select = '''
-        SELECT a.competency_id, a.name, a.date_created, c.name
+        SELECT a.competency_id, a.name, a.date_created, c.name, a.assessment_id
         FROM Assessments a
         JOIN Competencies c ON a.competency_id = c.competency_id
         WHERE a.assessment_id == ?
@@ -76,7 +76,7 @@ def get_assessments(cursor, id = -1, limit = 0, order_by = None):
       return rows
     else:
       sql_select = '''
-        SELECT a.competency_id, a.name, a.date_created, c.name
+        SELECT a.competency_id, a.name, a.date_created, c.name, a.assessment_id
         FROM Assessments a
         JOIN Competencies c ON a.competency_id = c.competency_id
         '''
@@ -395,7 +395,7 @@ def view_user_info(cursor, user_id):
         try:
           print(f'{row_data[0]:<2} {row_data[1]:<12} {row_data[2]:<12} {row_data[3]:<15} {row_data[4]:<25} {is_active_str:<7} {row_data[7]:<20} {row_data[8]:<20} {user_type_str:<8}')
         except Exception as e:
-          print(f'\n- ERROR: {e}. Could not print row data for person -')
+          print(f'\n- ERROR: {e}. Could not print row data for that User -')
     else:
       print(f'\n- Could not retrieve data for User with that ID -')
       return False
@@ -425,7 +425,27 @@ def view_all_users_info(cursor):
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for that User -')
   else:
-    print(f'\n- There are currently no Active People -')
+    print(f'\n- There are currently no Users -')
+    return False
+  
+def view_all_assessments(cursor):
+  print('\n--- Assessments ---')
+  rows = get_assessments(cursor)
+  if rows:
+    print(f'{"id":<2} {"Name":<12}')
+    for row in rows:
+      row_data = []
+      for i in range(len(row)):
+        if row[i]:
+          row_data.append(row[i])
+        else:
+          row_data.append('None')
+      try:
+        print(f'{row_data[4]:<2} {row_data[1]:<12}')
+      except Exception as e:
+        print(f'\n- ERROR: {e}. Could not print row data for that Assessment -')
+  else:
+    print(f'\n- There are currently no Assessments -')
     return False
   
 def get_user_id_prompt():
@@ -438,7 +458,7 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login
     id, first_name, last_name, phone, email, password, is_active, date_created, hire_date, user_type = user_data
     edit_user_choice = ''
     if is_view_all_mode:
-      edit_user_choice = input("\nTo update a field, enter the first letter of the field.\nTo change the User's password, type 'PASSWORD'\nTo view this User's Competency Summary, type 'SUMMARY'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
+      edit_user_choice = input("\nTo update a field, enter the first letter of the field.\nTo change the User's password, type 'PASSWORD'\nTo view this User's Competency Summary, type 'SUMMARY'\nTo view all Assessment Results for this User, type 'VIEW'\nTo record a new Assessment Result for this User, type 'RECORD'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
     else:
       edit_user_choice = input("\nTo update a field, enter the first letter of the field.\nTo change the User's password, type 'PASSWORD'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
     
@@ -510,8 +530,21 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login
     elif is_view_all_mode and edit_user_choice.lower() == 'summary':
       view_user_info(cursor, user_id)
       view_user_competency_summary(cursor, user_id)
+    elif is_view_all_mode and edit_user_choice.lower() == 'view':
+      view_assessment_results(cursor, user_id)
+    elif is_view_all_mode and edit_user_choice.lower() == 'record':
+      view_all_users_info(cursor)
+      manager_id = input("\nPlease type the number of the ID for the Manager who oversaw this assessment. Or press 'Enter' if there was no overseeing Manager: ")
+      if manager_id == '':
+        manager_id = user_id
+      view_all_assessments(cursor)
+      assessment_id = input("\nPlease type the number of the Assessment you would like to record results for: ")
+      score = input('Please enter the score of the assessment as a number between 1 and 5: ')
+      score_int = int(score)
+      if score_int >= 1 and score_int <= 5:
+        date_taken = input('\nPlease enter the date the date the Assessment was taken (format: YYYY/MM/DD hh:mm:ss): ')
+        add_assessment_result(connection, user_id, manager_id, assessment_id, score, date_taken)
+      else:
+        print('- Sorry, the score needs to be an integer between 1 and 5. Please try again.')
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not fulfill the request -')
-  
-  
-    
