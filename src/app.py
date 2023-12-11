@@ -64,6 +64,28 @@ def get_users_with_search_prompt():
     view_user_info(cursor, user_id)
     is_manager = login_manager.is_manager
     edit_user_info_prompt(connection, cursor, user_id, is_manager, login_manager, True)
+
+def add_user_prompt():
+  print('\nPlease fill out the form below:')
+  first_name = input('First Name: ')
+  last_name = input('Last Name: ')
+  phone = input('Phone: ')
+  email = input('Email: ')
+  password = input('Password: ')
+  hash = login_manager.encrypt_password(password)
+  date_created = get_date_time_str()
+  hire_date = input('Hire Date: (format: YYYY/MM/DD hh:mm:ss): ')
+  active_str = input('Is Active? (0 for inactive, 1 for active): ')
+  if active_str == '0' or active_str == '1':
+    active = int(active_str)
+    user_type_str = input('Type of User? (0 for standard User, 1 for Manager): ')
+    if user_type_str == '0' or user_type_str == '1':
+      user_type = int(user_type_str)  
+      add_user(connection, first_name, last_name, phone, email, hash, active, date_created, hire_date, user_type)
+    else:
+      print('- Incorrect input. Please try again. -')
+  else:
+    print('- Incorrect input. Please try again. -')
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,
@@ -86,7 +108,7 @@ manager_menu = {
   '2. Users Menu': {
     '\n+++ Users Menu +++\n\n1. View All Users': view_all_users,
     '2. Search for Users': get_users_with_search_prompt,
-    '3. Add new User': placeholder,
+    '3. Add new User': add_user_prompt,
   },
   '3. Competencies Menu': {
     '\n+++ Competencies Menu +++\n\n1. View Competencies': placeholder, # Select/edit competencies here, or view report of all users and their competency levels for specific competency

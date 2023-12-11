@@ -7,7 +7,7 @@ connection = sqlite3.connect('src/competency_tracker.db')
 cursor = connection.cursor()
 login_manager = Login_Manager(connection)
 
-password = login_manager.encrypt_password('fiver_pass')
+password = login_manager.encrypt_password('jordan_pass')
 password_str = str(password)
 print(password)
 print(password_str)
