@@ -718,8 +718,6 @@ def edit_assessment_result_prompt(connection, cursor, result_id, login_manager):
   if is_manager:
     try:
       result_data = get_assessment_results_by_id(cursor, result_id)[0]
-      print('TESTING')
-      print(result_data)
       user_id = result_data[1]
       manager_id = result_data[2]
       assessment_id = result_data[3]

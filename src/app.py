@@ -145,7 +145,14 @@ def add_assessment_results_prompt():
     add_assessment_result(connection, user_id, manager_id, assessment_id, score, date_taken)
   else:
     print('- Sorry, the score needs to be an integer between 1 and 5. Please try again.')
-  
+
+def delete_assessment_results_prompt():
+  view_assessment_results(cursor, None, None, False)
+  result_id = input("\nPlease type the ID# of the Assessment Results you would like to delete, or press 'Enter' to return to the previous menu.\n>>>")
+  view_assessment_results(cursor, None, result_id, False)
+  confirmation = input('\nAre you sure you want to delete these Assessment Results? (Y/N): ').lower()
+  if confirmation == 'y':
+    delete_assessment_result(connection, result_id)
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,
@@ -181,7 +188,7 @@ manager_menu = {
   '5. Assessment Results Menu': {
     '\n+++ Assessment Results Menu +++\n\n1. View/Edit Assessment Results': view_all_assessment_results_option,
     '2. Add new Assessment Result': add_assessment_results_prompt,
-    '3. Delete Assessment Result': placeholder,
+    '3. Delete Assessment Result': delete_assessment_results_prompt,
   },
   '6. Import/Export Menu': {
     '\n+++ Import/Export Menu +++\n\n1. Export CSV File': placeholder,
@@ -191,18 +198,3 @@ manager_menu = {
 }
 
 run_menu(main_menu, login_manager)
-
-# view_all_assessment_results_option()
-# view_user_competency_summary(cursor, 1)
-
-
-
-# all_competencies = get_competencies(cursor)
-# print(len(all_competencies))
-# print(get_competency_summary_data(cursor, 1))
-
-# user_id = 4
-# view_user_info(cursor, user_id)
-# # get_competency_summary_data(cursor, user_id)
-# view_user_competency_summary(cursor, user_id)
-# input("\nPress 'Enter' to Continue")
