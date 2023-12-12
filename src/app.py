@@ -94,6 +94,14 @@ def add_user_prompt():
       print('- Incorrect input. Please try again. -')
   else:
     print('- Incorrect input. Please try again. -')
+
+def add_competency_prompt():
+  competency_name = input('\nPlease enter a name for the new competency: ')
+  if competency_name:
+    date = get_date_time_str()
+    add_competency(connection, competency_name, date)
+  else:
+    print('- Sorry, you did not input a valid name. Please try again. -')
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,
@@ -119,9 +127,8 @@ manager_menu = {
     '3. Add new User': add_user_prompt,
   },
   '3. Competencies Menu': {
-    '\n+++ Competencies Menu +++\n\n1. View Competencies': view_all_competencies_option, # Select/edit competencies here, or view report of all users and their competency levels for specific competency
-    '2. Add new Competency': placeholder,
-    '3. Competency report for all Users': placeholder
+    '\n+++ Competencies Menu +++\n\n1. View/Edit Competencies': view_all_competencies_option,
+    '2. Add new Competency': add_competency_prompt,
   },
   '4. Assessments Menu': {
     '\n+++ Assessments Menu +++\n\n1. View Assessments': placeholder, # Select/edit competencies here
