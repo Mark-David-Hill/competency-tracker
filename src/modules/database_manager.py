@@ -605,14 +605,14 @@ def edit_competency_prompt(connection, cursor, competency_id, login_manager):
     try:
       competency_data = get_competencies(cursor, competency_id)[0]
       competency_name, date_created, id = competency_data
-      edit_competency_choice = input("\nTo change the name of this competency, type 'NAME'\nTo view a report of all Users levels for this Competency, type 'REPORT'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
+      edit_competency_choice = input("\nTo change the name of this competency, type 'NAME'\nTo view a summary of all Users levels for this Competency, type 'SUMMARY'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
 
       if edit_competency_choice.lower() == 'name':
         print(f'\nCurrent Competency Name: {competency_name}')
         new_competency_name = input('New Competency Name: ')
         edit_competency(connection, new_competency_name, competency_id)
-      elif edit_competency_choice.lower() == 'report':
-        pass
+      elif edit_competency_choice.lower() == 'summary':
+        view_competency_results_summary(cursor, competency_id)
       elif edit_competency_choice.lower() == '':
         pass
       else:
@@ -622,3 +622,9 @@ def edit_competency_prompt(connection, cursor, competency_id, login_manager):
       print(f'\n- ERROR: {e}. Could not fulfill the request -')
   else:
     print('- Sorry, you do not have access to editing Competencies')
+
+def view_competency_results_summary(cursor, competency_id):
+  view_competency(cursor, competency_id)
+  print('This will be a report')
+  # ID, Competency Name, Average Score for all users, Date Created,
+  # user_id, user_name, Recent Competency Score, (0 if never taken) Most recent assessment name, date taken
