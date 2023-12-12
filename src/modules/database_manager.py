@@ -99,7 +99,6 @@ def get_assessment_results(cursor, user_id = -1, limit = 0, order_by = None):
       rows = cursor.execute(sql_select,(user_id,)).fetchall()
       return rows
     else:
-      print('TESTING. INSIDE SQL SELECT CODE')
       sql_select = '''
         SELECT ar.result_id, ar.user_id, ar.manager_id, ar.assessment_id, u.first_name, u.last_name, m.first_name, m.last_name, a.name, ar.score, ar.date_taken 
         FROM Assessment_results ar
@@ -122,7 +121,7 @@ def get_assessment_results_by_id(cursor, result_id):
       JOIN Assessments a ON ar.assessment_id = a.assessment_id
       WHERE ar.result_id == ?
       '''
-    rows = cursor.execute(sql_select,(result_id,)).fetchone()
+    rows = cursor.execute(sql_select,(result_id,)).fetchall()
     return rows
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not get Assessment Result data.')
@@ -259,15 +258,28 @@ def delete_assessment_result(connection, id):
   except Exception as e:
     print(f'\n- ERROR: {e}. Assessment Results were not deleted -')
 
-
-def view_assessment_results(cursor, user_id):
+def view_assessment_results(cursor, user_id = None, results_id = None, show_continue_prompt = True):
   print('\n--- Assessment Results ---')
-  user_data = get_users(cursor, user_id)[0]
-  user_name = user_data[1] + ' ' + user_data[2]
-  rows = get_assessment_results(cursor, user_id)
+  rows = None
+  if user_id:
+    rows = get_assessment_results(cursor, user_id)
+  elif results_id:
+    rows = get_assessment_results_by_id(cursor, results_id)
+  else:
+    rows = get_assessment_results(cursor)
+
   if rows:
     print(f'{"id":<4} {"User":<20} {"Manager":<20} {"Assessment":<50} {"Score":<6} {"Date Taken":<20}' )
     for row in rows:
+      first_name = row[4]
+      last_name = row[5]
+      user_name = first_name + ' ' + last_name
+      manager_name = 'None'
+      if row[1] != row[2]:
+        manager_first_name = row[6]
+        manager_last_name = row[7]
+        manager_name = manager_first_name + ' ' + manager_last_name
+      
       row_data = []
       manager_name = ''
       if row[1] == row[2]:
@@ -284,7 +296,8 @@ def view_assessment_results(cursor, user_id):
         print(f'{row_data[0]:<4} {user_name:<20} {manager_name:<20} {row_data[8]:<50} {row_data[9]:<6} {row_data[10]:<20}')
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for Assessment Results -')
-    input("\nPress 'Enter' to Continue")
+    if show_continue_prompt:
+      input("\nPress 'Enter' to Continue")
   else:
     print(f'\n- There are currently no Assessment Results for this User -')
     return False
@@ -349,9 +362,20 @@ def view_user_competency_summary(cursor, user_id):
   all_competencies = get_competencies(cursor)
   for i in range(len(all_competencies)):
     row = get_competency_summary_data(cursor, user_id, i + 1)
-    rows.append(row)
+    if row[0][0]:
+      rows.append(row)
+    else:
+      competency_name = all_competencies[i][0]
+      new_row = [[]]
+      new_row[0].append(competency_name)
+      new_row[0].append(0)
+      new_row[0].append(0)
+      rows.append(new_row)
     recent_score = get_most_recent_score(cursor, user_id, i + 1)
-    recent_scores.append(recent_score[0])
+    if recent_score:
+      recent_scores.append(recent_score[0])
+    else:
+      recent_scores.append(0)
   if rows:
     print(f'{"Competency":<30} {"Score":<7} {"Ave Score":<5}')
     for i in range(len(rows)):
@@ -679,6 +703,59 @@ def edit_assessment_prompt(connection, cursor, assessment_id, login_manager):
         print(f'\nCurrent Competency ID: {competency_id}')
         new_competency_id = input('New Competency ID: ')
         edit_assessment(assessment_id, connection, None, new_competency_id)
+      elif edit_competency_choice.lower() == '':
+        pass
+      else:
+        print('- Sorry, that was not a valid choice. Please try again -')
+
+    except Exception as e:
+      print(f'\n- ERROR: {e}. Could not fulfill the request -')
+  else:
+    print('- Sorry, you do not have access to editing Competencies')
+
+def edit_assessment_result_prompt(connection, cursor, result_id, login_manager):
+  is_manager = login_manager.is_manager
+  if is_manager:
+    try:
+      result_data = get_assessment_results_by_id(cursor, result_id)[0]
+      print('TESTING')
+      print(result_data)
+      user_id = result_data[1]
+      manager_id = result_data[2]
+      assessment_id = result_data[3]
+      score = result_data[9]
+      date_taken = result_data[10]
+
+      edit_competency_choice = input("\nTo change the User ID for these Assessment Results, type 'USER'\nTo change the Manager ID, type 'MANAGER'\nTo change the Assessment ID, type 'ASSESSMENT'\nTo change the Score, type 'SCORE'\nTo change the Date Taken, type 'DATE'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
+
+      if edit_competency_choice.lower() == 'user':
+        view_all_users_info(cursor)
+        print(f'\nCurrent User ID: {user_id}')
+        new_user_id = input('New User ID: ')
+        if new_user_id:
+          edit_assessment_results(connection, result_id, 'user_id', new_user_id)
+      elif edit_competency_choice.lower() == 'manager':
+        view_all_users_info(cursor)
+        print(f'\nCurrent Manager ID: {manager_id}')
+        new_manager_id = input('New Manager ID: ')
+        if new_manager_id:
+          edit_assessment_results(connection, result_id, 'manager_id', new_manager_id)
+      elif edit_competency_choice.lower() == 'assessment':
+        view_all_assessments(cursor)
+        print(f'\nCurrent Assessment ID: {assessment_id}')
+        new_assessment_id = input('New Assessment ID: ')
+        if new_assessment_id:
+          edit_assessment_results(connection, result_id, 'assessment_id', new_assessment_id)
+      elif edit_competency_choice.lower() == 'score':
+        print(f'\nCurrent Score: {score}')
+        new_score = input('New Score: ')
+        if new_score:
+          edit_assessment_results(connection, result_id, 'score', new_score)
+      elif edit_competency_choice.lower() == 'date':
+        print(f'\nCurrent Date Taken: {date_taken}')
+        new_date = input('New Date Taken (format: YYYY/MM/DD hh:mm:ss): ')
+        if new_date:
+          edit_assessment_results(connection, result_id, 'date_taken', new_date)
       elif edit_competency_choice.lower() == '':
         pass
       else:

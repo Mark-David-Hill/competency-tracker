@@ -67,6 +67,14 @@ def view_all_assessments_option():
     view_assessment(cursor, assessment_id)
     edit_assessment_prompt(connection, cursor, assessment_id, login_manager)
 
+def view_all_assessment_results_option():
+  view_assessment_results(cursor, None, None, False)
+  results_id = get_results_id_prompt()
+  current_results = get_assessment_results_by_id(cursor, results_id)
+  if current_results:
+    view_assessment_results(cursor, None, results_id, False)
+    edit_assessment_result_prompt(connection, cursor, results_id, login_manager)
+
 def view_current_user_competency_summary():
   user_id = login_manager.user.id
   view_user_info(cursor, user_id)
@@ -110,6 +118,16 @@ def add_competency_prompt():
     add_competency(connection, competency_name, date)
   else:
     print('- Sorry, you did not input a valid name. Please try again. -')
+
+def add_assessment_prompt():
+  date = get_date_time_str()
+  view_all_competencies(cursor)
+  competency_id = input('\nPlease enter the ID# of the competency you would like to create this assessment for: ')
+  assessment_name = input('\nPlease enter a name for the new assessment: ')
+  if competency_id and assessment_name:
+    add_assessment(connection, competency_id, assessment_name, date)
+  else:
+    print('- Sorry, you did not input a valid name. Please try again. -')
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,
@@ -140,10 +158,10 @@ manager_menu = {
   },
   '4. Assessments Menu': {
     '\n+++ Assessments Menu +++\n\n1. View/Edit Assessments': view_all_assessments_option,
-    '2. Add new Assessment': placeholder
+    '2. Add new Assessment': add_assessment_prompt
   },
   '5. Assessment Results Menu': {
-    '\n+++ Assessment Results Menu +++\n\n1. View/Edit Assessment Results': placeholder,
+    '\n+++ Assessment Results Menu +++\n\n1. View/Edit Assessment Results': view_all_assessment_results_option,
     '2. Add new Assessment Result': placeholder,
     '3. Delete Assessment Result': placeholder,
   },
@@ -155,6 +173,12 @@ manager_menu = {
 }
 
 run_menu(main_menu, login_manager)
+
+# view_all_assessment_results_option()
+# view_user_competency_summary(cursor, 1)
+
+
+
 # all_competencies = get_competencies(cursor)
 # print(len(all_competencies))
 # print(get_competency_summary_data(cursor, 1))
