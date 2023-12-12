@@ -128,6 +128,24 @@ def add_assessment_prompt():
     add_assessment(connection, competency_id, assessment_name, date)
   else:
     print('- Sorry, you did not input a valid name. Please try again. -')
+
+def add_assessment_results_prompt():
+  view_all_users_info(cursor)
+  user_id = input('\nPlease enter the ID# of the User you would like to create an Assessment Result for: ')
+  # view_all_users_info(cursor)
+  manager_id = input("\nPlease type the number of the ID for the Manager who oversaw this assessment. Or press 'Enter' if there was no overseeing Manager: ")
+  if manager_id == '':
+    manager_id = user_id
+  view_all_assessments(cursor)
+  assessment_id = input("\nPlease type the number of the Assessment you would like to record results for: ")
+  score = input('Please enter the score of the assessment as a number between 1 and 5: ')
+  score_int = int(score)
+  if score_int >= 1 and score_int <= 5:
+    date_taken = input('\nPlease enter the date the date the Assessment was taken (format: YYYY/MM/DD hh:mm:ss): ')
+    add_assessment_result(connection, user_id, manager_id, assessment_id, score, date_taken)
+  else:
+    print('- Sorry, the score needs to be an integer between 1 and 5. Please try again.')
+  
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,
@@ -162,7 +180,7 @@ manager_menu = {
   },
   '5. Assessment Results Menu': {
     '\n+++ Assessment Results Menu +++\n\n1. View/Edit Assessment Results': view_all_assessment_results_option,
-    '2. Add new Assessment Result': placeholder,
+    '2. Add new Assessment Result': add_assessment_results_prompt,
     '3. Delete Assessment Result': placeholder,
   },
   '6. Import/Export Menu': {
