@@ -65,7 +65,7 @@ def view_all_assessments_option():
   current_assessment = get_assessments(cursor, assessment_id)
   if current_assessment:
     view_assessment(cursor, assessment_id)
-    # edit_competency_prompt(connection, cursor, competency_id, login_manager)
+    edit_assessment_prompt(connection, cursor, assessment_id, login_manager)
 
 def view_current_user_competency_summary():
   user_id = login_manager.user.id

@@ -658,3 +658,33 @@ def view_competency_results_summary(cursor, competency_id):
   print('This will be a report')
   # ID, Competency Name, Average Score for all users, Date Created,
   # user_id, user_name, Recent Competency Score, (0 if never taken) Most recent assessment name, date taken
+
+def edit_assessment_prompt(connection, cursor, assessment_id, login_manager):
+  is_manager = login_manager.is_manager
+  if is_manager:
+    try:
+      assessment_data = get_assessments(cursor, assessment_id)[0]
+      # competency_name, date_created, id = assessment_data
+      assessment_name = assessment_data[1]
+      competency_id = assessment_data[0]
+
+      edit_competency_choice = input("\nTo change the name of this Assessment, type 'NAME'\nTo change the Competency associated with this Assessment, type 'COMP'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
+
+      if edit_competency_choice.lower() == 'name':
+        print(f'\nCurrent Assessment Name: {assessment_name}')
+        new_assessment_name = input('New Assessment Name: ')
+        edit_assessment(assessment_id, connection, new_assessment_name)
+      elif edit_competency_choice.lower() == 'comp':
+        view_all_competencies(cursor)
+        print(f'\nCurrent Competency ID: {competency_id}')
+        new_competency_id = input('New Competency ID: ')
+        edit_assessment(assessment_id, connection, None, new_competency_id)
+      elif edit_competency_choice.lower() == '':
+        pass
+      else:
+        print('- Sorry, that was not a valid choice. Please try again -')
+
+    except Exception as e:
+      print(f'\n- ERROR: {e}. Could not fulfill the request -')
+  else:
+    print('- Sorry, you do not have access to editing Competencies')
