@@ -436,7 +436,7 @@ def view_all_assessments(cursor):
   print('\n--- Assessments ---')
   rows = get_assessments(cursor)
   if rows:
-    print(f'{"id":<2} {"Name":<12}')
+    print(f'{"id":<2} {"Name":<50} {"Competency":<30} {"Date Created":<20}')
     for row in rows:
       row_data = []
       for i in range(len(row)):
@@ -445,7 +445,7 @@ def view_all_assessments(cursor):
         else:
           row_data.append('None')
       try:
-        print(f'{row_data[4]:<2} {row_data[1]:<12}')
+        print(f'{row_data[4]:<2} {row_data[1]:<50} {row_data[3]:<30} {row_data[2]:<20}')
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for that Assessment -')
   else:
@@ -490,6 +490,28 @@ def view_competency(cursor, competency_id):
         print(f'\n- ERROR: {e}. Could not print row data for that Competency -')
   else:
     print(f'\n- There are currently no Competencies -')
+    return False
+  
+def view_assessment(cursor, assessment_id):
+  # print('\n--- Assessments ---')
+  rows = get_assessments(cursor, assessment_id)
+  if rows:
+    print(f'{"id":<2} {"Name":<50} {"Competency":<30} {"Date Created":<20}')
+    for row in rows:
+      row_data = []
+      for i in range(len(row)):
+        if row[i]:
+          row_data.append(row[i])
+        else:
+          row_data.append('None')
+      # competency_name = ''
+      # row_data.append(competency_name)
+      try:
+        print(f'{row_data[4]:<2} {row_data[1]:<50} {row_data[3]:<30} {row_data[2]:<20}')
+      except Exception as e:
+        print(f'\n- ERROR: {e}. Could not print row data for that Assessment -')
+  else:
+    print(f'\n- There are currently no Assessments -')
     return False
   
 def get_user_id_prompt():
@@ -596,6 +618,14 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login
 
 def get_competency_id_prompt():
   id = input('\nPlease enter the id of the Competency you would like to edit: ')
+  return id
+
+def get_assessment_id_prompt():
+  id = input('\nPlease enter the id of the Assessment you would like to edit: ')
+  return id
+
+def get_results_id_prompt():
+  id = input('\nPlease enter the id of the Assessment Results you would like to edit: ')
   return id
 
 

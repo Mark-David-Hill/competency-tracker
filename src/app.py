@@ -59,6 +59,14 @@ def view_all_competencies_option():
     view_competency(cursor, competency_id)
     edit_competency_prompt(connection, cursor, competency_id, login_manager)
 
+def view_all_assessments_option():
+  view_all_assessments(cursor)
+  assessment_id = get_assessment_id_prompt()
+  current_assessment = get_assessments(cursor, assessment_id)
+  if current_assessment:
+    view_assessment(cursor, assessment_id)
+    # edit_competency_prompt(connection, cursor, competency_id, login_manager)
+
 def view_current_user_competency_summary():
   user_id = login_manager.user.id
   view_user_info(cursor, user_id)
@@ -122,7 +130,7 @@ manager_menu = {
     '3. View Assessment Results': view_assessment_results_for_current_user,
   },
   '2. Users Menu': {
-    '\n+++ Users Menu +++\n\n1. View All Users': view_all_users,
+    '\n+++ Users Menu +++\n\n1. View/Edit Users': view_all_users,
     '2. Search for Users': get_users_with_search_prompt,
     '3. Add new User': add_user_prompt,
   },
@@ -131,11 +139,11 @@ manager_menu = {
     '2. Add new Competency': add_competency_prompt,
   },
   '4. Assessments Menu': {
-    '\n+++ Assessments Menu +++\n\n1. View Assessments': placeholder, # Select/edit competencies here
+    '\n+++ Assessments Menu +++\n\n1. View/Edit Assessments': view_all_assessments_option,
     '2. Add new Assessment': placeholder
   },
   '5. Assessment Results Menu': {
-    '\n+++ Assessment Results Menu +++\n\n1. View Assessment Results': placeholder, # Select/edit competencies here
+    '\n+++ Assessment Results Menu +++\n\n1. View/Edit Assessment Results': placeholder,
     '2. Add new Assessment Result': placeholder,
     '3. Delete Assessment Result': placeholder,
   },
