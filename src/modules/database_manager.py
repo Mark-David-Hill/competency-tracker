@@ -51,7 +51,7 @@ def get_user_with_specific_email(cursor, email_str):
 
 def get_competencies(cursor, id = -1, limit = 0, order_by = None):
   try:
-    competency_fields = ['name', 'date_created']
+    competency_fields = ['name', 'date_created', 'competency_id']
     if id != -1:
       where_competencies = Where_dict('competency_id', id, 'equals')
     else:
@@ -452,6 +452,46 @@ def view_all_assessments(cursor):
     print(f'\n- There are currently no Assessments -')
     return False
   
+def view_all_competencies(cursor):
+  print('\n--- Competencies ---')
+  rows = get_competencies(cursor)
+  if rows:
+    print(f'{"id":<3} {"Name":<30} {"Date Created":<20}')
+    for row in rows:
+      row_data = []
+      for i in range(len(row)):
+        if row[i]:
+          row_data.append(row[i])
+        else:
+          row_data.append('None')
+      try:
+        print(f'{row_data[2]:<3} {row_data[0]:<30} {row_data[1]}')
+      except Exception as e:
+        print(f'\n- ERROR: {e}. Could not print row data for that Competency -')
+  else:
+    print(f'\n- There are currently no Competencies -')
+    return False
+  
+def view_competency(cursor, competency_id):
+  # print('\n--- Competencies ---')
+  rows = get_competencies(cursor, competency_id)
+  if rows:
+    print(f'{"id":<3} {"Name":<30} {"Date Created":<20}')
+    for row in rows:
+      row_data = []
+      for i in range(len(row)):
+        if row[i]:
+          row_data.append(row[i])
+        else:
+          row_data.append('None')
+      try:
+        print(f'{row_data[2]:<3} {row_data[0]:<30} {row_data[1]}')
+      except Exception as e:
+        print(f'\n- ERROR: {e}. Could not print row data for that Competency -')
+  else:
+    print(f'\n- There are currently no Competencies -')
+    return False
+  
 def get_user_id_prompt():
   id = input('\nPlease enter the id of the User you would like view/edit the info for: ')
   return id
@@ -552,3 +592,33 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login
         print('- Sorry, the score needs to be an integer between 1 and 5. Please try again.')
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not fulfill the request -')
+
+
+def get_competency_id_prompt():
+  id = input('\nPlease enter the id of the Competency you would like to edit: ')
+  return id
+
+
+def edit_competency_prompt(connection, cursor, competency_id, login_manager):
+  is_manager = login_manager.is_manager
+  if is_manager:
+    try:
+      competency_data = get_competencies(cursor, competency_id)[0]
+      competency_name, date_created, id = competency_data
+      edit_competency_choice = input("\nTo change the name of this competency, type 'NAME'\nTo view a report of all Users levels for this Competency, type 'REPORT'\nTo return to the previous menu, press 'Enter'.\n>>>").lower()
+
+      if edit_competency_choice.lower() == 'name':
+        print(f'\nCurrent Competency Name: {competency_name}')
+        new_competency_name = input('New Competency Name: ')
+        edit_competency(connection, new_competency_name, competency_id)
+      elif edit_competency_choice.lower() == 'report':
+        pass
+      elif edit_competency_choice.lower() == '':
+        pass
+      else:
+        print('- Sorry, that was not a valid choice. Please try again -')
+
+    except Exception as e:
+      print(f'\n- ERROR: {e}. Could not fulfill the request -')
+  else:
+    print('- Sorry, you do not have access to editing Competencies')

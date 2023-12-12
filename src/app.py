@@ -51,6 +51,14 @@ def view_all_users():
     is_manager = login_manager.is_manager
     edit_user_info_prompt(connection, cursor, user_id, is_manager, login_manager, True)
 
+def view_all_competencies_option():
+  view_all_competencies(cursor)
+  competency_id = get_competency_id_prompt()
+  current_competency = get_competencies(cursor, competency_id)
+  if current_competency:
+    view_competency(cursor, competency_id)
+    edit_competency_prompt(connection, cursor, competency_id, login_manager)
+
 def view_current_user_competency_summary():
   user_id = login_manager.user.id
   view_user_info(cursor, user_id)
@@ -111,7 +119,7 @@ manager_menu = {
     '3. Add new User': add_user_prompt,
   },
   '3. Competencies Menu': {
-    '\n+++ Competencies Menu +++\n\n1. View Competencies': placeholder, # Select/edit competencies here, or view report of all users and their competency levels for specific competency
+    '\n+++ Competencies Menu +++\n\n1. View Competencies': view_all_competencies_option, # Select/edit competencies here, or view report of all users and their competency levels for specific competency
     '2. Add new Competency': placeholder,
     '3. Competency report for all Users': placeholder
   },
