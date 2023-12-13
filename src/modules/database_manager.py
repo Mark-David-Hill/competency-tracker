@@ -15,7 +15,6 @@ class Where_dict:
     self.value = value
     self.operator = operator
 
-# Users SELECT sql creation. for user_type, 0 = standard user, 1 = manager
 def get_users(cursor, id = -1, limit = 0, order_by = None):
   try:
     user_fields = ['user_id', 'first_name', 'last_name', 'phone', 'email', 'password', 'active', 'date_created', 'hire_date', 'user_type']
@@ -269,7 +268,9 @@ def view_assessment_results(cursor, user_id = None, results_id = None, show_cont
     rows = get_assessment_results(cursor)
 
   if rows:
-    print(f'{"id":<4} {"User":<20} {"Manager":<20} {"Assessment":<50} {"Score":<6} {"Date Taken":<20}' )
+    dash = '-'
+    print(f'{"id":<4} {"User":<20} {"Manager":<20} {"Assessment":<50} {"Score":<6} {"Date Taken":<20}')
+    print(f'{dash * 4} {dash * 20} {dash * 20} {dash * 50} {dash * 6} {dash * 20}')
     for row in rows:
       first_name = row[4]
       last_name = row[5]
@@ -293,6 +294,7 @@ def view_assessment_results(cursor, user_id = None, results_id = None, show_cont
         else:
           row_data.append('None')
       try:
+        dash = '-'
         print(f'{row_data[0]:<4} {user_name:<20} {manager_name:<20} {row_data[8]:<50} {row_data[9]:<6} {row_data[10]:<20}')
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for Assessment Results -')
@@ -408,7 +410,9 @@ def view_user_competency_summary(cursor, user_id):
     else:
       recent_scores.append(0)
   if rows:
+    dash = '-'
     print(f'{"User Name":<20} {"Email":<25} {"Competency":<30} {"Score":<7} {"Ave Score":<5}')
+    print(f'{dash * 20} {dash * 25} {dash * 30} {dash * 7} {dash * 5}')
     for i in range(len(rows)):
       row = rows[i]
       row_data = []
@@ -420,6 +424,7 @@ def view_user_competency_summary(cursor, user_id):
       try:
         row = row_data[0]
         most_recent_score = recent_scores[i]
+        dash = '-'
         print(f'{user_name:<20} {email:<25} {row[0]:<30} {most_recent_score:<7} {row[2]:<5.2f}')
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for Competency Results -')
@@ -433,7 +438,9 @@ def view_user_info(cursor, user_id):
     print('\n--- User Profile ---')
     rows = get_users(cursor, user_id)
     if rows:
+      dash = '-'
       print(f'{"id":<2} {"First Name":<12} {"Last Name":<12} {"Phone":<15} {"Email":<25} {"Active":<7} {"Date Created":<20} {"Hire Date":<20} {"User Type":<8}')
+      print(f'{dash * 2} {dash * 12} {dash * 12} {dash * 15} {dash * 25} {dash * 7} {dash * 20} {dash * 20} {dash * 8}')
       for row in rows:
         row_data = []
         for i in range(len(row)):
@@ -448,6 +455,7 @@ def view_user_info(cursor, user_id):
         if row_data[9] == 1:
           user_type_str = 'Manager'
         try:
+          dash = '-'
           print(f'{row_data[0]:<2} {row_data[1]:<12} {row_data[2]:<12} {row_data[3]:<15} {row_data[4]:<25} {is_active_str:<7} {row_data[7]:<20} {row_data[8]:<20} {user_type_str:<8}')
         except Exception as e:
           print(f'\n- ERROR: {e}. Could not print row data for that User -')
@@ -465,7 +473,9 @@ def view_all_users_info(cursor, search_str = None):
   else:
     rows = get_users_with_search(cursor, search_str)
   if rows:
+    dash = '-'
     print(f'{"id":<2} {"First Name":<12} {"Last Name":<12} {"Phone":<15} {"Email":<25} {"Active":<7} {"Date Created":<20} {"Hire Date":<20} {"User Type":<8}')
+    print(f'{dash * 2} {dash * 12} {dash * 12} {dash * 15} {dash * 25} {dash * 7} {dash * 20} {dash * 20} {dash * 8} ')
     for row in rows:
       row_data = []
       for i in range(len(row)):
@@ -480,6 +490,7 @@ def view_all_users_info(cursor, search_str = None):
       if row_data[9] == 1:
         user_type_str = 'Manager'
       try:
+        dash = '-'
         print(f'{row_data[0]:<2} {row_data[1]:<12} {row_data[2]:<12} {row_data[3]:<15} {row_data[4]:<25} {is_active_str:<7} {row_data[7]:<20} {row_data[8]:<20} {user_type_str:<8}')
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for that User -')
@@ -491,7 +502,9 @@ def view_all_assessments(cursor):
   print('\n--- Assessments ---')
   rows = get_assessments(cursor)
   if rows:
+    dash = '-'
     print(f'{"id":<2} {"Name":<50} {"Competency":<30} {"Date Created":<20}')
+    print(f'{dash * 2} {dash * 50} {dash * 30} {dash * 20}')
     for row in rows:
       row_data = []
       for i in range(len(row)):
@@ -500,6 +513,7 @@ def view_all_assessments(cursor):
         else:
           row_data.append('None')
       try:
+        dash = '-'
         print(f'{row_data[4]:<2} {row_data[1]:<50} {row_data[3]:<30} {row_data[2]:<20}')
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for that Assessment -')
@@ -511,7 +525,9 @@ def view_all_competencies(cursor):
   print('\n--- Competencies ---')
   rows = get_competencies(cursor)
   if rows:
+    dash = '-'
     print(f'{"id":<3} {"Name":<30} {"Date Created":<20}')
+    print(f'{dash * 3} {dash * 30} {dash * 20}')
     for row in rows:
       row_data = []
       for i in range(len(row)):
@@ -520,7 +536,8 @@ def view_all_competencies(cursor):
         else:
           row_data.append('None')
       try:
-        print(f'{row_data[2]:<3} {row_data[0]:<30} {row_data[1]}')
+        dash = '-'
+        print(f'{row_data[2]:<3} {row_data[0]:<30} {row_data[1]:<20}')
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for that Competency -')
   else:
@@ -531,7 +548,9 @@ def view_competency(cursor, competency_id):
   # print('\n--- Competencies ---')
   rows = get_competencies(cursor, competency_id)
   if rows:
+    dash = '-'
     print(f'{"id":<3} {"Name":<30} {"Date Created":<20}')
+    print(f'{dash * 3} {dash * 30} {dash * 20}')
     for row in rows:
       row_data = []
       for i in range(len(row)):
@@ -540,7 +559,8 @@ def view_competency(cursor, competency_id):
         else:
           row_data.append('None')
       try:
-        print(f'{row_data[2]:<3} {row_data[0]:<30} {row_data[1]}')
+        dash = '-'
+        print(f'{row_data[2]:<3} {row_data[0]:<30} {row_data[1]:<20}')
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for that Competency -')
   else:
@@ -551,7 +571,9 @@ def view_assessment(cursor, assessment_id):
   # print('\n--- Assessments ---')
   rows = get_assessments(cursor, assessment_id)
   if rows:
+    dash = '-'
     print(f'{"id":<2} {"Name":<50} {"Competency":<30} {"Date Created":<20}')
+    print(f'{dash * 2} {dash * 50} {dash * 30} {dash * 20}')
     for row in rows:
       row_data = []
       for i in range(len(row)):
@@ -562,6 +584,7 @@ def view_assessment(cursor, assessment_id):
       # competency_name = ''
       # row_data.append(competency_name)
       try:
+        dash = '-'
         print(f'{row_data[4]:<2} {row_data[1]:<50} {row_data[3]:<30} {row_data[2]:<20}')
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for that Assessment -')
@@ -602,7 +625,7 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login
       new_phone = input('New Phone Number: ')
       edit_user(connection, user_id, 'phone', new_phone)
     elif edit_user_choice == 'e':
-      print(f'\nCurrent Phone Email: {email}')
+      print(f'\nCurrent Email: {email}')
       new_email = input('New Email: ')
       edit_user(connection, user_id, 'email', new_email)
     elif edit_user_choice == 'a':
@@ -616,7 +639,7 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login
           if choice.lower() == 'y':
             edit_user(connection, user_id, 'active', 1)
       else:
-        print('Sorry, only Managers are allowed to activate or deactivate Users.')
+        print('\n- Sorry, only Managers are allowed to activate or deactivate Users. -')
     elif edit_user_choice == 'd':
       print(f'\nCurrent Date Created: {date_created}')
       new_date_created = input('New Date Created: ')
@@ -636,7 +659,7 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login
           if choice.lower() == 'y':
             edit_user(connection, user_id, 'user_type', 1)
       else:
-        print("Sorry, only Managers are allowed to change a User's Type.")
+        print("\n- Sorry, only Managers are allowed to change a User's Type. -")
     elif edit_user_choice.lower() == 'password':
         password_guess = input("Please input the user's current password: ")
         is_correct_password = login_manager.check_password(password_guess, password)
@@ -649,9 +672,9 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login
             # user_bytes = password_str.encode('utf-8')
             edit_user(connection, user_id, 'password', new_hash)
           else:
-            print('- Sorry, the two passwords entered did not match. Please try again. -')
+            print('\n- Sorry, the two passwords entered did not match. Please try again. -')
         else:
-          print('- Sorry, that password was incorrect. Please try again. -')
+          print('\n- Sorry, that password was incorrect. Please try again. -')
     elif is_view_all_mode and edit_user_choice.lower() == 'summary':
       view_user_info(cursor, user_id)
       view_user_competency_summary(cursor, user_id)
@@ -670,7 +693,7 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login
         date_taken = input('\nPlease enter the date the date the Assessment was taken (format: YYYY/MM/DD hh:mm:ss): ')
         add_assessment_result(connection, user_id, manager_id, assessment_id, score, date_taken)
       else:
-        print('- Sorry, the score needs to be an integer between 1 and 5. Please try again.')
+        print('\n- Sorry, the score needs to be an integer between 1 and 5. Please try again.')
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not fulfill the request -')
 
@@ -679,7 +702,7 @@ def get_competency_id_prompt(is_export_prompt = False):
   if is_export_prompt:
     id = input('\nPlease enter the id of the Competency you would like to export a Competency Results Summary for: ')
   else:
-    id = input('\nPlease enter the id of the Competency you would like to edit: ')
+    id = input('\nPlease enter the id of the Competency you would like to view/edit: ')
   return id
 
 def get_assessment_id_prompt():
@@ -708,12 +731,12 @@ def edit_competency_prompt(connection, cursor, competency_id, login_manager):
       elif edit_competency_choice.lower() == '':
         pass
       else:
-        print('- Sorry, that was not a valid choice. Please try again -')
+        print('\n- Sorry, that was not a valid choice. Please try again -')
 
     except Exception as e:
       print(f'\n- ERROR: {e}. Could not fulfill the request -')
   else:
-    print('- Sorry, you do not have access to editing Competencies')
+    print('\n- Sorry, you do not have access to editing Competencies')
 
 def edit_assessment_prompt(connection, cursor, assessment_id, login_manager):
   is_manager = login_manager.is_manager
@@ -738,12 +761,12 @@ def edit_assessment_prompt(connection, cursor, assessment_id, login_manager):
       elif edit_competency_choice.lower() == '':
         pass
       else:
-        print('- Sorry, that was not a valid choice. Please try again -')
+        print('\n- Sorry, that was not a valid choice. Please try again -')
 
     except Exception as e:
       print(f'\n- ERROR: {e}. Could not fulfill the request -')
   else:
-    print('- Sorry, you do not have access to editing Competencies')
+    print('\n- Sorry, you do not have access to editing Competencies')
 
 def edit_assessment_result_prompt(connection, cursor, result_id, login_manager):
   is_manager = login_manager.is_manager
@@ -789,18 +812,16 @@ def edit_assessment_result_prompt(connection, cursor, result_id, login_manager):
       elif edit_competency_choice.lower() == '':
         pass
       else:
-        print('- Sorry, that was not a valid choice. Please try again -')
+        print('\n- Sorry, that was not a valid choice. Please try again -')
 
     except Exception as e:
       print(f'\n- ERROR: {e}. Could not fulfill the request -')
   else:
-    print('- Sorry, you do not have access to editing Competencies')
+    print('\n- Sorry, you do not have access to editing Competencies')
 
 def view_competency_results_summary(cursor, competency_id):
-  # view_competency(cursor, competency_id)
   competency_data = get_competencies(cursor, competency_id)[0]
   competency_name = competency_data[0]
-  # Comp ID, Comp Name, Average Competency Score For All Users, User ID, User Name, Competency Score, Assessment, Date Taken
   all_users = get_users(cursor)
   print(f'\n--- {competency_name} Competency Summary ---')
   average_score = 0
@@ -825,7 +846,9 @@ def view_competency_results_summary(cursor, competency_id):
 
 
   if all_users:
+    dash = '-'
     print(f'{"ID":<3} {"Competency":<30} {"Avg Score":<10} {"User ID":<8} {"User Name":<20} {"User Score":<12} {"Assessment":<50} {"Date Taken":<20}')
+    print(f'{dash * 3} {dash * 30} {dash * 10} {dash * 8} {dash * 20} {dash * 12} {dash * 50} {dash * 20}')
     for user in all_users:
       user_id = user[0]
       user_name = user[1] + ' ' + user[2]
@@ -841,6 +864,7 @@ def view_competency_results_summary(cursor, competency_id):
       date_taken_data = get_most_recent_assessment_date_taken(cursor, user_id, competency_id)
       if date_taken_data:
         date_taken = date_taken_data[0]
+      dash = '-'
       print(f'{competency_id:<3} {competency_name:<30} {average_score:<10.2f} {user_id:<8} {user_name:<20} {user_score:<12} {assessment_name:<50} {date_taken:<20}')
     input("\nPress 'Enter' to Continue")
   else:

@@ -1,12 +1,3 @@
-# To Start:
-# python3 -m pipenv shell
-# cd <directory>
-# python3 app.py
-
-# mark@gmail.com password = 'mark_pass'
-# krystal@gmail.com password = 'krystal_pass'
-# etc.
-
 from modules.get_datetime_str import get_date_time_str
 from modules.login_manager import *
 from modules.database_manager import *
@@ -263,12 +254,3 @@ manager_menu = {
 }
 
 run_menu(main_menu, login_manager)
-
-# import_csv_files_prompt()
-
-# export_competency_results_summary_prompt()
-
-
-
-# get_user_competency_summary_data(cursor, 2)
-# export_user_competency_summary_prompt()

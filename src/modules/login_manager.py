@@ -11,7 +11,6 @@ class Login_Manager:
     self.user = None
   
   class User:
-  #  Initialize with blank data, add data with successful login?
    def __init__(self, id, first_name, last_name, phone, email, password_hash_str, is_active, date_created, hire_date, user_type) -> None:
     self.id = id
     self.first_name = first_name
@@ -33,13 +32,13 @@ class Login_Manager:
     return hash_str
 
   def check_password(self, password_str, hashed_password):
-      # try:
-      hash = bytes(hashed_password, 'utf-8')
-      user_bytes = password_str.encode('utf-8')
-      result = bcrypt.checkpw(user_bytes, hash)
-      return result
-      # except Exception as e:
-      #   print(f'ERROR: {e} Password Check could not be performed.')
+      try:
+        hash = bytes(hashed_password, 'utf-8')
+        user_bytes = password_str.encode('utf-8')
+        result = bcrypt.checkpw(user_bytes, hash)
+        return result
+      except Exception as e:
+        print(f'ERROR: {e} Password Check could not be performed.')
 
   def attempt_login(self, cursor, user_name, password):
     try:
@@ -57,13 +56,13 @@ class Login_Manager:
             self.is_manager = True
           return True
         else:
-          print('- Sorry, Inactive Users cannot Login. -')
+          print('\n- Sorry, Inactive Users cannot Login. -')
           return False
       else:
-        print('- Incorrect User Name or Password. Login attempt failed.')
+        print('\n- Incorrect User Name or Password. Login attempt failed.')
         return False
     except:
-      print(f'ERROR: Incorrect User Name or Password. Login attempt failed.')
+      print(f'\nERROR: Incorrect User Name or Password. Login attempt failed.')
 
   def logout_user(self):
     self.current_user = None
