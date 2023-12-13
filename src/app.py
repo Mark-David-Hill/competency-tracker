@@ -77,7 +77,6 @@ def view_all_assessment_results_option():
 
 def view_current_user_competency_summary():
   user_id = login_manager.user.id
-  view_user_info(cursor, user_id)
   view_user_competency_summary(cursor, user_id)
 
 def get_users_with_search_prompt():
@@ -198,3 +197,6 @@ manager_menu = {
 }
 
 run_menu(main_menu, login_manager)
+
+
+# view_competency_results_summary(cursor, 1)

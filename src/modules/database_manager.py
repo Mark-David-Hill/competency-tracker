@@ -356,6 +356,7 @@ def get_most_recent_score(cursor, user_id, competency_id):
 def view_user_competency_summary(cursor, user_id):
   user_data = get_users(cursor, user_id)[0]
   user_name = user_data[1] + ' ' + user_data[2]
+  email = user_data[4]
   print(f'\n--- {user_name} Competency Summary ---')
   rows = []
   recent_scores = []
@@ -377,7 +378,7 @@ def view_user_competency_summary(cursor, user_id):
     else:
       recent_scores.append(0)
   if rows:
-    print(f'{"Competency":<30} {"Score":<7} {"Ave Score":<5}')
+    print(f'{"User Name":<20} {"Email":<25} {"Competency":<30} {"Score":<7} {"Ave Score":<5}')
     for i in range(len(rows)):
       row = rows[i]
       row_data = []
@@ -389,7 +390,7 @@ def view_user_competency_summary(cursor, user_id):
       try:
         row = row_data[0]
         most_recent_score = recent_scores[i]
-        print(f'{row[0]:<30} {most_recent_score:<7} {row[2]:<5.2f}')
+        print(f'{user_name:<20} {email:<25} {row[0]:<30} {most_recent_score:<7} {row[2]:<5.2f}')
       except Exception as e:
         print(f'\n- ERROR: {e}. Could not print row data for Competency Results -')
     input("\nPress 'Enter' to Continue")
@@ -677,12 +678,6 @@ def edit_competency_prompt(connection, cursor, competency_id, login_manager):
   else:
     print('- Sorry, you do not have access to editing Competencies')
 
-def view_competency_results_summary(cursor, competency_id):
-  view_competency(cursor, competency_id)
-  print('This will be a report')
-  # ID, Competency Name, Average Score for all users, Date Created,
-  # user_id, user_name, Recent Competency Score, (0 if never taken) Most recent assessment name, date taken
-
 def edit_assessment_prompt(connection, cursor, assessment_id, login_manager):
   is_manager = login_manager.is_manager
   if is_manager:
@@ -763,3 +758,8 @@ def edit_assessment_result_prompt(connection, cursor, result_id, login_manager):
       print(f'\n- ERROR: {e}. Could not fulfill the request -')
   else:
     print('- Sorry, you do not have access to editing Competencies')
+
+def view_competency_results_summary(cursor, competency_id):
+  view_competency(cursor, competency_id)
+  print('This will be a report')
+  # Comp ID, Comp Name, Average Competency Score For All Users, User ID, User Name, Competency Score, Assessment, Date Taken
