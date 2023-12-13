@@ -353,6 +353,36 @@ def get_most_recent_score(cursor, user_id, competency_id):
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not get Competency Summary Data.')
 
+def get_most_recent_assessment(cursor, user_id, competency_id):
+  try:
+    sql_select = '''
+      SELECT a.name
+      FROM Assessment_results ar
+      JOIN Assessments a ON ar.assessment_id = a.assessment_id
+      JOIN Competencies c ON a.competency_id = c.competency_id
+      WHERE ar.user_id = ? AND a.competency_id = ?
+      ORDER BY ar.date_taken DESC
+      '''
+    row = cursor.execute(sql_select,(user_id, competency_id,)).fetchone()
+    return row
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Competency Summary Data.')
+
+def get_most_recent_assessment_date_taken(cursor, user_id, competency_id):
+  try:
+    sql_select = '''
+      SELECT ar.date_taken
+      FROM Assessment_results ar
+      JOIN Assessments a ON ar.assessment_id = a.assessment_id
+      JOIN Competencies c ON a.competency_id = c.competency_id
+      WHERE ar.user_id = ? AND a.competency_id = ?
+      ORDER BY ar.date_taken DESC
+      '''
+    row = cursor.execute(sql_select,(user_id, competency_id,)).fetchone()
+    return row
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not get Competency Summary Data.')
+
 def view_user_competency_summary(cursor, user_id):
   user_data = get_users(cursor, user_id)[0]
   user_name = user_data[1] + ' ' + user_data[2]
@@ -760,6 +790,52 @@ def edit_assessment_result_prompt(connection, cursor, result_id, login_manager):
     print('- Sorry, you do not have access to editing Competencies')
 
 def view_competency_results_summary(cursor, competency_id):
-  view_competency(cursor, competency_id)
-  print('This will be a report')
+  # view_competency(cursor, competency_id)
+  competency_data = get_competencies(cursor, competency_id)[0]
+  competency_name = competency_data[0]
   # Comp ID, Comp Name, Average Competency Score For All Users, User ID, User Name, Competency Score, Assessment, Date Taken
+  all_users = get_users(cursor)
+  print(f'\n--- {competency_name} Competency Summary ---')
+  average_score = 0
+  active_user_count = 0
+  sum_of_scores = 0
+
+
+  if all_users:
+    for user in all_users:
+      user_id = user[0]
+      is_active = False
+      if user[6]:
+        is_active = True
+      if is_active:
+        active_user_count += 1
+        recent_score = get_most_recent_score(cursor, user_id, competency_id)
+        if recent_score:
+          sum_of_scores += recent_score[0]
+
+  if sum_of_scores > 0 and active_user_count > 0:
+    average_score = sum_of_scores / active_user_count
+
+
+  if all_users:
+    print(f'{"ID":<3} {"Competency":<30} {"Avg Score":<10} {"User ID":<8} {"User Name":<20} {"User Score":<12} {"Assessment":<50} {"Date Taken":<20}')
+    for user in all_users:
+      user_id = user[0]
+      user_name = user[1] + ' ' + user[2]
+      user_score = 0
+      user_score_data = get_most_recent_score(cursor, user_id, competency_id)
+      if user_score_data:
+        user_score = user_score_data[0]
+      assessment_name = ''
+      assessment_name_data = get_most_recent_assessment(cursor, user_id, competency_id)
+      if assessment_name_data:
+        assessment_name = assessment_name_data[0]
+      date_taken = ''
+      date_taken_data = get_most_recent_assessment_date_taken(cursor, user_id, competency_id)
+      if date_taken_data:
+        date_taken = date_taken_data[0]
+      print(f'{competency_id:<3} {competency_name:<30} {average_score:<10.2f} {user_id:<8} {user_name:<20} {user_score:<12} {assessment_name:<50} {date_taken:<20}')
+    input("\nPress 'Enter' to Continue")
+  else:
+    print(f'\n- There are currently no Users to provide data for the report -')
+    return False

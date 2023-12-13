@@ -199,4 +199,4 @@ manager_menu = {
 run_menu(main_menu, login_manager)
 
 
-# view_competency_results_summary(cursor, 1)
+# view_competency_results_summary(cursor, 19)
