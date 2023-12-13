@@ -569,8 +569,12 @@ def view_assessment(cursor, assessment_id):
     print(f'\n- There are currently no Assessments -')
     return False
   
-def get_user_id_prompt():
-  id = input('\nPlease enter the id of the User you would like view/edit the info for: ')
+def get_user_id_prompt(is_export_prompt = False):
+  id = None
+  if is_export_prompt:
+    id = input('\nPlease enter the id of the User you would like export a User Competency Summary For: ')
+  else:
+    id = input('\nPlease enter the id of the User you would like view/edit the info for: ')
   return id
   
 def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login_manager, is_view_all_mode = False):
@@ -671,8 +675,11 @@ def edit_user_info_prompt(connection, cursor, user_id, current_is_manager, login
     print(f'\n- ERROR: {e}. Could not fulfill the request -')
 
 
-def get_competency_id_prompt():
-  id = input('\nPlease enter the id of the Competency you would like to edit: ')
+def get_competency_id_prompt(is_export_prompt = False):
+  if is_export_prompt:
+    id = input('\nPlease enter the id of the Competency you would like to export a Competency Results Summary for: ')
+  else:
+    id = input('\nPlease enter the id of the Competency you would like to edit: ')
   return id
 
 def get_assessment_id_prompt():
@@ -839,3 +846,82 @@ def view_competency_results_summary(cursor, competency_id):
   else:
     print(f'\n- There are currently no Users to provide data for the report -')
     return False
+  
+def get_user_competency_summary_data(cursor, user_id):
+  user_data = get_users(cursor, user_id)[0]
+  user_name = user_data[1] + ' ' + user_data[2]
+  email = user_data[4]
+  rows = []
+  all_competencies = get_competencies(cursor)
+  for i in range(len(all_competencies)):
+    competency_id = i + 1
+    competency_summary_data = get_competency_summary_data(cursor, user_id, competency_id)
+    rows.append([])
+    rows[i].append(user_name)
+    rows[i].append(email)
+    competency_name = all_competencies[i][0]
+    rows[i].append(competency_name)
+    score = 0
+    score_data = get_most_recent_score(cursor, user_id, (competency_id))
+    if score_data:
+      score = score_data[0]
+    rows[i].append(score)
+    average_score = 0
+    if competency_summary_data:
+      if competency_summary_data[0][2]:
+        average_score = competency_summary_data[0][2]
+    rows[i].append(average_score)
+  return rows
+
+def get_competency_results_summary_data(cursor, competency_id):
+  fields = ['id', 'competency', 'avg_score', 'user_id', 'user_name', 'user_score', 'assessment', 'date_taken']
+  competency_data = get_competencies(cursor, competency_id)
+  competency_name = competency_data[0][0]
+  all_users = get_users(cursor)
+  active_user_count = 0
+  sum_of_scores = 0
+  average_score = 0
+  if all_users:
+    for user in all_users:
+      user_id = user[0]
+      is_active = False
+      if user[6]:
+        is_active = True
+      if is_active:
+        active_user_count += 1
+        recent_score = get_most_recent_score(cursor, user_id, competency_id)
+        if recent_score:
+          sum_of_scores += recent_score[0]
+
+  if sum_of_scores > 0 and active_user_count > 0:
+    average_score = sum_of_scores / active_user_count
+
+  rows = []
+  for i in range(len(all_users)):
+    rows.append([])
+    user_id = i + 1
+    user_data = get_users(cursor, user_id)
+    user_name = ''
+    if user_data:
+      user_name = user_data[0][1] + ' ' + user_data[0][2]
+    rows[i].append(competency_id)
+    rows[i].append(competency_name)
+    rows[i].append(average_score)
+    rows[i].append(user_id)
+    rows[i].append(user_name)
+    score = 0
+    score_data = get_most_recent_score(cursor, user_id, competency_id)
+    if score_data:
+      score = score_data[0]
+    rows[i].append(score)
+    assessment_name_data = get_most_recent_assessment(cursor, user_id, competency_id)
+    assessment_name = ''
+    if assessment_name_data:
+      assessment_name = assessment_name_data[0]
+    date_taken = ''
+    date_taken_data = get_most_recent_assessment_date_taken(cursor, user_id, competency_id)
+    if date_taken_data:
+      date_taken = date_taken_data[0]
+    rows[i].append(assessment_name)
+    rows[i].append(date_taken)
+  return rows

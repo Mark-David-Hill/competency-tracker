@@ -12,6 +12,7 @@ from modules.login_manager import *
 from modules.database_manager import *
 from modules.menu_manager import *
 import sqlite3
+import csv
 connection = sqlite3.connect('src/competency_tracker.db')
 cursor = connection.cursor()
 login_manager = Login_Manager(connection)
@@ -152,6 +153,44 @@ def delete_assessment_results_prompt():
   confirmation = input('\nAre you sure you want to delete these Assessment Results? (Y/N): ').lower()
   if confirmation == 'y':
     delete_assessment_result(connection, result_id)
+
+def export_user_competency_summary_prompt():
+  view_all_users_info(cursor)
+  user_id = get_user_id_prompt(True)
+  try:
+    user_data = get_users(cursor, user_id)
+    user_name = user_data[0][1].lower() + '_' + user_data[0][2].lower()
+    data_list = get_user_competency_summary_data(cursor, user_id)
+    filename = f'src/exports/{user_name}_competency_summary.csv'
+    with open(filename, 'w') as outfile:
+      fields = ['user_name', 'email', 'competency', 'score', 'avg_score']
+      writer = csv.writer(outfile)
+
+      writer.writerow(fields)
+      writer.writerows(data_list)
+      print(f'\nSUCCESS: "{filename}" created!')
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not Export CSV file')
+
+
+def export_competency_results_summary_prompt():
+  view_all_competencies(cursor)
+  competency_id = get_competency_id_prompt(True)
+  try:
+    competency_data = get_competencies(cursor, competency_id)
+    competency_name_list = competency_data[0][0].lower().split()
+    competency_name = '_'.join(competency_name_list)
+    data_list = get_competency_results_summary_data(cursor, competency_id)
+    filename = f'src/exports/{competency_name}_competency_results_summary.csv'
+    with open(filename, 'w') as outfile:
+      fields = ['id', 'competency', 'avg_score', 'user_id', 'user_name', 'user_score', 'assessment', 'date_taken']
+      writer = csv.writer(outfile)
+
+      writer.writerow(fields)
+      writer.writerows(data_list)
+      print(f'\nSUCCESS: "{filename}" created!')
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not Export CSV file')
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,
@@ -190,7 +229,10 @@ manager_menu = {
     '3. Delete Assessment Result': delete_assessment_results_prompt,
   },
   '6. Import/Export Menu': {
-    '\n+++ Import/Export Menu +++\n\n1. Export CSV File': placeholder,
+    '\n+++ Import/Export Menu +++\n\n1. Export CSV File': {
+      '\n1. Export User Competency Summary': export_user_competency_summary_prompt,
+      '2. Export Competency Results Summary': export_competency_results_summary_prompt
+    },
     '2. Import CSV File': placeholder
   },
   '7. Logout': 'logout'
@@ -198,5 +240,9 @@ manager_menu = {
 
 run_menu(main_menu, login_manager)
 
+# export_competency_results_summary_prompt()
 
-# view_competency_results_summary(cursor, 19)
+
+
+# get_user_competency_summary_data(cursor, 2)
+# export_user_competency_summary_prompt()
