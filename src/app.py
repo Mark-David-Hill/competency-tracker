@@ -28,11 +28,7 @@ def login_prompt():
       run_menu(user_menu, login_manager)
     return True
   else:
-    # print('incorrect login info. Please try again.')
     return False
-  
-def placeholder():
-  print('placeholder')
 
 def view_assessment_results_for_current_user():
   user_id = login_manager.user.id
@@ -132,7 +128,6 @@ def add_assessment_prompt():
 def add_assessment_results_prompt():
   view_all_users_info(cursor)
   user_id = input('\nPlease enter the ID# of the User you would like to create an Assessment Result for: ')
-  # view_all_users_info(cursor)
   manager_id = input("\nPlease type the number of the ID for the Manager who oversaw this assessment. Or press 'Enter' if there was no overseeing Manager: ")
   if manager_id == '':
     manager_id = user_id
@@ -191,6 +186,35 @@ def export_competency_results_summary_prompt():
       print(f'\nSUCCESS: "{filename}" created!')
   except Exception as e:
     print(f'\n- ERROR: {e}. Could not Export CSV file')
+
+def import_csv_files_prompt():
+  filename = ''
+  raw_filename = input('Please enter the name of the file from the imports folder you would like to import data from: ')
+  if len(raw_filename) > 4:
+    if raw_filename[-4] == '.' and raw_filename[-3] == 'c' and raw_filename[-2] == 's' and raw_filename[-1] == 'v':
+      filename = raw_filename
+    else:
+      filename = raw_filename + '.csv'
+  else:
+    filename = raw_filename + '.csv'
+  filepath = f'src/imports/{filename}'
+  rows = []
+  try:
+    with open(filepath, 'r') as csv_file:
+      csv_reader = csv.reader(csv_file)
+      fields = next(csv_reader)
+      data_list = []
+      # for row in csv_reader:
+      #   data_list.append(row)
+      for row in csv_reader:
+        user_id = row[0]
+        assessment_id = row[1]
+        manager_id = user_id
+        score = row[2]
+        date_taken = row[3]
+        add_assessment_result(connection, user_id, manager_id, assessment_id, score, date_taken)
+  except Exception as e:
+    print(f'\n- ERROR: {e}. Could not Import CSV file')
   
 main_menu = {
   "\n*** Welcome to Business Inc. LLC's Competency Tracker App ***\n\n1. User Login": login_prompt,
@@ -229,16 +253,18 @@ manager_menu = {
     '3. Delete Assessment Result': delete_assessment_results_prompt,
   },
   '6. Import/Export Menu': {
-    '\n+++ Import/Export Menu +++\n\n1. Export CSV File': {
+    '\n+++ Import/Export Menu +++\n\n1. Import CSV Files': import_csv_files_prompt,
+    '2. Export CSV File': {
       '\n1. Export User Competency Summary': export_user_competency_summary_prompt,
       '2. Export Competency Results Summary': export_competency_results_summary_prompt
-    },
-    '2. Import CSV File': placeholder
+    }
   },
   '7. Logout': 'logout'
 }
 
 run_menu(main_menu, login_manager)
+
+# import_csv_files_prompt()
 
 # export_competency_results_summary_prompt()
 
