@@ -26,6 +26,7 @@ Getting Started
     -username: atrus@gmail.com password: atrus_pass
 
   -Note that if a User is inactive they cannot login. Their data can still be viewed/edited by a manager.
+
     Inactive Users:
     -username: inactiboy@gmail.com password: inactiboy_pass
     -username: inactigirl@gmail.com password: inactigiril_pass
@@ -33,36 +34,46 @@ Getting Started
 Using the App
   
   Once you have logged into the app you have different options depending on if you have logged in as a Standard User or as a Manager.
+
   -Standard User Menu Options:
+
     -View/Edit Profile: Users can view their own information and edit things such as name, phone, email, and password.
     -View User Competency Summary: Users can view a Summary of all their competency scores.
     -View Assessment Results: Views all Assessment Results for the current user
     -Logout: Logs out of the current User's Account
 
   -Manager Options:
+
     -Personal Profile Menu: Has the same options as are available to a Standard User (though Managers can also edit their User Type/Active Status)
+    
     -Users Menu
       -View/Edit Users: Here Managers can view data for all Users, select a user, then can edit that User's information, View a Competency Summary for the User, View all Assessment Results for the User, or record a new Assessment Result for the User.
       -Search for Users: Managers can search for User's based on First or Last Name. They can then select users and will have the option to edit that User's information, View a Competency Summary for the User, View all Assessment Results for the User, or record a new Assessment Result for the User.
       -Add new User: Managers can fill out a form to add a new User to the database.
+    
     -Competencies Menu
       -View/Edit Competencies: Here Managers can view data for all Competencies, select a competency, then can change the name of the Competency or view a Competency Results Summary for the chosen Competency.
       -Add new Competency: Managers can fill out a form to add a new Competency to the database.
+    
     -Assessments Menu
       -View/Edit Assessments: Here Managers can view data for all Assessments, select an Assessment, then can edit the Assessment's name or Competency.
       -Add new Assessment: Managers can fill out a form to add a new Competency to the database.
+    
     -Assessments Results Menu
       -View/Edit Assessment Results: Here Managers can view data for all Assessment Results, select a Result, then can edit the Result's information.
       -Add new Assessment Result: Managers can fill out a form to add a new Assessment Result for a User.
       -Delete Assessment Result: Managers can select an Assessment Result to delete/remove from the database.
+    
     -Import/Export Menu
       -Import CSV Files: Managers can specify the filename for a CSV file in the imports folder in order to import those Assessment Results from the file and add the results to the database.
       -Export CSV File
         -Export User Competency Summary: The Manager can choose a User to create a User Competency Summary Report and export it as a CSV File.
         -Export Competency Results Summary: The Manager can choose a Competency to create a Competency Results Summary Report and export it as a CSV File.
+    
     -Logout: Logs out of the current User's Account
 
 Testing
+
   Though the average User should not need to worry about testing, there are a set of Unit Tests that run with Pytest available in tests/test_app.py. In order to run the tests, you will need to install Pytest then run the command:
     PYTHONPATH=src python3 -m pytest
   Writing these tests was a learning process and I would have done some things differently were I to start over, but they were still a valuable asset during development and are here in case you want to play around with them.
