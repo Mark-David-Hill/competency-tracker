@@ -65,10 +65,10 @@ Using the App
       -Delete Assessment Result: Managers can select an Assessment Result to delete/remove from the database.
     
     -Import/Export Menu
-      -Import CSV Files: Managers can specify the filename for a CSV file in the imports folder in order to import those Assessment Results from the file and add the results to the database. An example file called "assessment_results.csv" is included for testing purposes.
+      -Import CSV Files: Managers can specify the filename for a CSV file in the imports folder in order to import those Assessment Results from the file and add the results to the database. An example file called "assessment_results.csv" is included for testing purposes in the src/imports folder
       -Export CSV File
         -Export User Competency Summary: The Manager can choose a User to create a User Competency Summary Report and export it as a CSV File.
-        -Export Competency Results Summary: The Manager can choose a Competency to create a Competency Results Summary Report and export it as a CSV File.
+        -Export Competency Results Summary: The Manager can choose a Competency to create a Competency Results Summary Report and export it as a CSV File to the src/exports folder.
     
     -Logout: Logs out of the current User's Account
 
