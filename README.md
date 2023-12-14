@@ -75,5 +75,7 @@ Using the App
 Testing
 
   Though the average User should not need to worry about testing, there are a set of Unit Tests that run with Pytest available in tests/test_app.py. In order to run the tests, you will need to install Pytest then run the command:
+  
     PYTHONPATH=src python3 -m pytest
+  
   Writing these tests was a learning process and I would have done some things differently were I to start over, but they were still a valuable asset during development and are here in case you want to play around with them.
